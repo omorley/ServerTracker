@@ -1,0 +1,39 @@
+I would like to build a program to track servers in the data centre and their projected power utilization.
+
+Classes:
+	Server
+		name
+		cabinet
+		ip
+		purpose
+		owner
+		projectedPower
+		processors
+		cores
+		memory
+		serviceTag
+		warrantyExpiration
+		externalStorage
+	ExternalStorage
+		name
+		projectedPower
+	Cabinet
+		name
+		facility
+		powerCircuits
+	PowerCCT
+		name
+		ups
+		amperage
+
+Use case 1:
+	Print a report of all cabinets and their power usage
+
+Use case 2:
+	Identify circuits that are projected to be overloaded
+
+Use case 3:
+	List out servers that are using the most power in a specific cabinet
+	
+
+# This is a test.
