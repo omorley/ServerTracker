@@ -27,7 +27,7 @@ Classes:
 		amperage
 
 Use case 1:
-	Print a  report of all cabinets and their power usage
+	Print a report of all cabinets and their power usage
 
 Use case 2:
 	Identify circuits that are projected to be overloaded
