@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import ca.bcit.comp2613.servertracker.model.*;
 
-public class helper {
+public class Helper {
 	
 	public static void main(String[] args) {
 		
@@ -24,7 +24,8 @@ public class helper {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
-			servers.add(server); 
+			servers.add(server);
+			Server.ServerStatus.PROD;
 		}
 		return servers;
 	}

@@ -218,6 +218,19 @@ public class Server {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public enum ServerStatus {
+		PROD("Production"), DEV("Development"), STG("Staging");
+		
+		ServerStatus(String description) {
+			this.description = description;
+		}
+		private String description;
+		public String getDescription() {
+			return description;
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
