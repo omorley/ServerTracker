@@ -25,7 +25,6 @@ public class Helper {
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
 			servers.add(server);
-			Server.ServerStatus.PROD;
 		}
 		return servers;
 	}

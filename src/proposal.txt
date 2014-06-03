@@ -1,9 +1,13 @@
 I would like to build a program to track servers in the data centre and their projected power utilization.
 
 Classes:
+	Cabinet
+		name
+		servers
+		facility
+		powerCircuits
 	Server
 		name
-		cabinet
 		ip
 		purpose
 		owner
@@ -17,10 +21,6 @@ Classes:
 	ExternalStorage
 		name
 		projectedPower
-	Cabinet
-		name
-		facility
-		powerCircuits
 	PowerCCT
 		name
 		ups

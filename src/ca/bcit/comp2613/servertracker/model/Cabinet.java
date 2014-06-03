@@ -2,6 +2,7 @@
  * 
  */
 package ca.bcit.comp2613.servertracker.model;
+import java.util.ArrayList;
 
 /**
  * @author Owen
@@ -16,6 +17,8 @@ public class Cabinet {
 	private PowerCCT powerCircuits;
 	// String id because I'm told to have it
 	private String id;
+	// Arraylist of servers
+	private ArrayList<Server> servers;
 
 	public static void main(String[] args) {
 		
@@ -26,6 +29,7 @@ public class Cabinet {
 	 */
 	public Cabinet() {
 		super();
+		servers = new ArrayList<Server>();
 	}
 	/**
 	 * @param name
@@ -33,6 +37,7 @@ public class Cabinet {
 	public Cabinet(String name) {
 		super();
 		setName(name);
+		servers = new ArrayList<Server>();
 	}
 	/**
 	 * @return the name
@@ -81,7 +86,8 @@ public class Cabinet {
 	 */
 	public void setId(String id) {
 		this.id = id;
-	}	/* (non-Javadoc)
+	}	
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -90,8 +96,37 @@ public class Cabinet {
 				+ getFacility() + ", getPowerCircuits()=" + getPowerCircuits()
 				+ ", getId()=" + getId() + "]";
 	}
-	
-
+	/*
+	 * Method to add a Server to servers ArrayList
+	 * @param Server the Server to add
+	 */
+	public void addServer(Server server) {
+		if (! servers.contains(server)) {
+			servers.add(server);
+		}
+	}
+	/*
+	 * Method to remove a Server from servers ArrayList
+	 * @param Server the Server to remove
+	 */
+	public void removeServer(Server server) {
+		if (servers.contains(server)) {
+			servers.remove(server);
+		}
+	}
+	/*
+	 * @return the list of servers
+	 */
+	public String listServers() {
+		String returnValue = "";
+		if (servers.isEmpty()) {
+			return null;
+		}
+		for (Server server:servers) {
+			returnValue = returnValue + " " + server.getName() + "\n";
+		}
+		return returnValue;
+	}
 	
 	
 }

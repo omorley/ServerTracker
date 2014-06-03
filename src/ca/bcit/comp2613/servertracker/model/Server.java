@@ -10,8 +10,6 @@ package ca.bcit.comp2613.servertracker.model;
 public class Server {
 	// Server's name
 	private String name;
-	// Server's physical cabinet/location
-	private Cabinet cabinet;
 	// IP of server
 	private String ip;
 	// Use for server
@@ -61,18 +59,6 @@ public class Server {
 	 */
 	public void setName(String name) {
 		this.name = name;
-	}
-	/**
-	 * @return the cabinet
-	 */
-	public Cabinet getCabinet() {
-		return cabinet;
-	}
-	/**
-	 * @param cabinet the cabinet to set
-	 */
-	public void setCabinet(Cabinet cabinet) {
-		this.cabinet = cabinet;
 	}
 	/**
 	 * @return the ip
