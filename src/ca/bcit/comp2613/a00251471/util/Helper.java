@@ -45,6 +45,7 @@ public class Helper {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
+			server.setServerStatus(ServerStatus.DEV);
 			servers.add(server);
 		}
 		return servers;

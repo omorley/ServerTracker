@@ -35,6 +35,10 @@ public class Server {
 	// String id because I'm told to have it
 	private String id;
 	
+	private ServerStatus serverStatus;
+	
+	
+	
 	/**
 	 * 
 	 */
@@ -205,25 +209,22 @@ public class Server {
 		this.id = id;
 	}
 	
-	public enum ServerStatus {
-		PROD("Production"), DEV("Development"), STG("Staging");
-		
-		ServerStatus(String description) {
-			this.description = description;
-		}
-		private String description;
-		public String getDescription() {
-			return description;
-		}
-	}
 	
+	
+	public ServerStatus getServerStatus() {
+		return serverStatus;
+	}
+	public void setServerStatus(ServerStatus serverStatus) {
+		this.serverStatus = serverStatus;
+	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "Server [getName()=" + getName() + ", getCabinet()="
-				+ getCabinet() + ", getIp()=" + getIp() + ", getPurpose()="
+				//+ getCabinet() ???? 
+				+ ", getIp()=" + getIp() + ", getPurpose()="
 				+ getPurpose() + ", getOwner()=" + getOwner()
 				+ ", getProjectedPower()=" + getProjectedPower()
 				+ ", getProcessors()=" + getProcessors() + ", getCores()="
