@@ -123,7 +123,7 @@ public class Cabinet {
 			return null;
 		}
 		for (Server server:servers) {
-			returnValue = returnValue + " " + server.getName() + "\n";
+			returnValue = returnValue + " " + server.getName() + "(" + server.getServerStatus().getDescription() + ")" + "\n";
 		}
 		return returnValue;
 	}

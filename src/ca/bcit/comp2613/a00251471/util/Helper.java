@@ -1,8 +1,10 @@
 package ca.bcit.comp2613.a00251471.util;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import ca.bcit.comp2613.servertracker.model.*;
+import java.util.Random;
 
 public class Helper {
 	
@@ -25,6 +27,7 @@ public class Helper {
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
 			servers.add(server);
+			server.setServerStatus(randomServerStatus());
 		}
 		return servers;
 	}
@@ -45,11 +48,25 @@ public class Helper {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
-			server.setServerStatus(ServerStatus.DEV);
 			servers.add(server);
+			server.setServerStatus(randomServerStatus());
 		}
 		return servers;
 	}
+	/**
+	 * @return random ServerStatus enum
+	 */
+	public static ServerStatus randomServerStatus() {
+		Random rand = new Random();
+		int randomEnum = rand.nextInt();
+		if (randomEnum % 3 == 0) {
+			return ServerStatus.PROD;
+		} else if (randomEnum % 3 == 1) {
+			return ServerStatus.STG;
+		} 
+		return ServerStatus.STG;
+	}
+
 	/**
 	 * Create max number of cabinets
 	 */
