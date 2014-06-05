@@ -4,7 +4,10 @@
 package ca.bcit.comp2613.a00251471.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
+import java.util.List;
 
 import ca.bcit.comp2613.a00251471.util.Helper;
 import ca.bcit.comp2613.a00251471.util.FillCabinetsException;
@@ -21,18 +24,44 @@ public class TestDriver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+	
 		//nameSearch();
 		//random100();
-		try {
-			fillCabinets(20,5);
-		} catch (FillCabinetsException e) {
-			System.out.println(e.getMessage());
-		} catch (CriticalFillCabinetsException e) {
-			e.printStackTrace();
+//		try {
+//			fillCabinets(20,5);
+//		} catch (FillCabinetsException e) {
+//			System.out.println(e.getMessage());
+//		} catch (CriticalFillCabinetsException e) {
+//			e.printStackTrace();
+//		}
+//		nameSearch();
+		sortServers();
 		}
-		nameSearch();
-	}
+	
+	/**
+	 * Return list of servers, sorted in reverse order by power utilization
+	 */
+	public static void sortServers() {
+		ArrayList<Server> servers = Helper.createServers();
+		Comparator<Server> serverComparator = new Comparator<Server>() {
+			@Override
+			public int compare(Server o1,Server o2) {
+				int retval = Double.compare(o1.getProjectedPower(), o2.getProjectedPower());
+				retval *= -1;
+				if (retval == 0) {
+					retval = o1.getName().compareTo(o2.getName());
+				}
+				return retval;
+			}
+		};
+		Collections.sort(servers, serverComparator);
+		for (Server server: servers) {
+			System.out.println("Server Name: " + server.getName() + ", Projected Power: " + server.getProjectedPower());
+		}
 
+	}
+	
+	
 	/**
 	 * @param numberOfCabinets number of cabinets to create
 	 * @param serversPerCab number of servers per cabinet

@@ -26,7 +26,7 @@ public class Helper {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
-			server.setProjectedPower(generateRandomPower(100,1400));
+			server.setProjectedPower(generateRandomPower(100,500));
 			server.setServerStatus(randomServerStatus());
 			servers.add(server);
 		}
@@ -49,7 +49,7 @@ public class Helper {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
-			server.setProjectedPower(generateRandomPower(100,1400));
+			server.setProjectedPower(generateRandomPower(100,500));
 			server.setServerStatus(randomServerStatus());
 			servers.add(server);
 		}
