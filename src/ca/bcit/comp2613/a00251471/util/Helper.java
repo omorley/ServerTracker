@@ -26,9 +26,9 @@ public class Helper {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
-			server.setProjectedPower(randomWattageGenerator(100,1500));
-			servers.add(server);
+			server.setProjectedPower(generateRandomPower(100,1400));
 			server.setServerStatus(randomServerStatus());
+			servers.add(server);
 		}
 		return servers;
 	}
@@ -49,9 +49,9 @@ public class Helper {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
 			server.setName(nameList[i]);
-			server.setProjectedPower(randomWattageGenerator(100,1500));
-			servers.add(server);
+			server.setProjectedPower(generateRandomPower(100,1400));
 			server.setServerStatus(randomServerStatus());
+			servers.add(server);
 		}
 		return servers;
 	}
@@ -189,17 +189,15 @@ public class Helper {
 		return foundCabinets;
 	}
 	
-	/*
-	 * Randomly generate wattage for a server
+	/**
+	 * Generate random power utilization for a server
 	 * @param min
 	 * @param max
 	 * @return
 	 */
-	public static int randomWattageGenerator(int min,int max) {
-		Random rand = new Random();
-		int randomNum = rand.nextInt((max - min) + 1) + min;
-		return randomNum;
-		
+	public static int generateRandomPower(int min,int max) {
+	    Random rand = new Random();
+	    int randomNum = rand.nextInt((max - min) + 1) + min;
+	    return randomNum;
 	}
-
 }
