@@ -3,13 +3,36 @@ package ca.bcit.comp2613.a00251471.util;
 import java.util.ArrayList;
 import java.util.Random;
 
+
+
+//Log4j
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+//File I/O
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+
 import ca.bcit.comp2613.servertracker.model.*;
+
 import java.util.Random;
+
 
 public class Helper {
 	
 	public static void main(String[] args) {
-		// Henry was here!!!
+		//log.debug("This is a debug message");
+		//log.error("ERROR", new Exception("Doh"));
+	}
+
+	
+	public static Logger log = Logger.getLogger(Helper.class);
+	static {
+		PropertyConfigurator.configure(
+			Helper.class.getResourceAsStream("log4j.properties")
+			);
 	}
 
 	// http://www.wines.com/pronunciation-wine-names.html + grep \( test | sed 's/\(.*\) (.*/\1/' | awk '{print $1}' | grep -v \\. | grep -vE ^A$ | grep -v The | sort | uniq | sed ':a;N;$!ba;s/\n/ /g'

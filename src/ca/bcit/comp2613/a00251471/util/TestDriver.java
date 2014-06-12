@@ -30,7 +30,7 @@ public class TestDriver {
 //		try {
 //			fillCabinets(20,5);
 //		} catch (FillCabinetsException e) {
-//			System.out.println(e.getMessage());
+//			Helper.log.error(e.getMessage());
 //		} catch (CriticalFillCabinetsException e) {
 //			e.printStackTrace();
 //		}
@@ -40,6 +40,8 @@ public class TestDriver {
 	
 	/**
 	 * Return list of servers, sorted in reverse order by power utilization
+	 * 
+	 * Outputs results to ServerReport.txt
 	 */
 	public static void sortServers() {
 		ArrayList<Server> servers = Helper.createServers();
@@ -55,9 +57,10 @@ public class TestDriver {
 			}
 		};
 		Collections.sort(servers, serverComparator);
-		for (Server server: servers) {
-			System.out.println("Server Name: " + server.getName() + ", Projected Power: " + server.getProjectedPower());
-		}
+		Report.serverList(servers);
+//		for (Server server: servers) {
+//			Helper.log.info("Server Name: " + server.getName() + ", Projected Power: " + server.getProjectedPower());
+//		}
 
 	}
 	
@@ -84,7 +87,7 @@ public class TestDriver {
 			}
 		}
 		for (Cabinet cabinet:cabinets) {
-			System.out.println("Servers in " + cabinet.getName() + ":\n" + cabinet.listServers() + "\n");
+			Helper.log.info("Servers in " + cabinet.getName() + ":\n" + cabinet.listServers() + "\n");
 		}
 	}
 	
@@ -95,85 +98,85 @@ public class TestDriver {
 		ArrayList<Server> servers = Helper.createServers(rand.nextInt(200));
 		try {
 			printResults = "";
-			System.out.println("Searching servers for Asace:");
+			Helper.log.info("Searching servers for Asace:");
 			for (Server server : Helper.findServerExactName(servers,"Asace")) {
 				printResults = printResults + server.getName() + "\n";
 			}
 			if (printResults.isEmpty()) {
 				throw new NameSearchException("No results.");
 			}
-			System.out.println(printResults);
+			Helper.log.info(printResults);
 		} catch (NameSearchException e) {
-			System.out.println(e.getMessage());
+			Helper.log.error(e.getMessage());
 		}
 		try {
 			printResults = "";
-			System.out.println("Searching servers for Alsace:");
+			Helper.log.info("Searching servers for Alsace:");
 			for (Server server : Helper.findServerExactName(servers,"Alsace")) {
 				printResults = printResults + server.getName() + "\n";
 			} 
 			if (printResults.isEmpty()) {
 				throw new NameSearchException("No results.");
 			}
-			System.out.println(printResults);
+			Helper.log.info(printResults);
 		} catch (NameSearchException e) {
-			System.out.println(e.getMessage());
+			Helper.log.error(e.getMessage());
 		}
 		try {
 			printResults = "";
-			System.out.println("Searching servers for G.*:");
+			Helper.log.info("Searching servers for G.*:");
 			for (Server server : Helper.findServerRegexName(servers,"G.*")) {
 				printResults = printResults + server.getName() + "\n";
 			} 
 			if (printResults.isEmpty()) {
 				throw new NameSearchException("No results.");
 			}
-			System.out.println(printResults);
+			Helper.log.info(printResults);
 		} catch (NameSearchException e) {
-			System.out.println(e.getMessage());
+			Helper.log.error(e.getMessage());
 		}
 		ArrayList<Cabinet> cabinets = Helper.createCabinets(rand.nextInt(200));
 
 		try {
 			printResults = "";
-			System.out.println("Searching cabinets for Adnams:");
+			Helper.log.info("Searching cabinets for Adnams:");
 			for (Cabinet cabinet : Helper.findCabinetExactName(cabinets,"Adnams")) {
 				printResults = printResults + cabinet.getName() + "\n";
 			} 
 			if (printResults.isEmpty()) {
 				throw new CabinetSearchException("No results.");
 			}
-			System.out.println(printResults);
+			Helper.log.info(printResults);
 		} catch (CabinetSearchException e) {
-			System.out.println(e.getMessage());
+			Helper.log.error(e.getMessage());
 		}
 		
 		try {
 			printResults = "";
-			System.out.println("Searching cabinets for Anams:");
+			Helper.log.info("Searching cabinets for Anams:");
 			for (Cabinet cabinet : Helper.findCabinetExactName(cabinets,"Anams")) {
 				printResults = printResults + cabinet.getName() + "\n";
 			} 
 			if (printResults.isEmpty()) {
 				throw new CabinetSearchException("No results.");
 			}
-			System.out.println(printResults);
+			Helper.log.info(printResults);
 		} catch (CabinetSearchException e) {
-			System.out.println(e.getMessage());
+			Helper.log.error(e.getMessage());
 		}
 
 		try {
 			printResults = "";
-			System.out.println("Searching cabinets for M.*:");
+			Helper.log.info("Searching cabinets for M.*:");
 			for (Cabinet cabinet : Helper.findCabinetRegexName(cabinets,"M.*")) {
 				printResults = printResults + cabinet.getName() + "\n";
 			} 
 			if (printResults.isEmpty()) {
 				throw new CabinetSearchException("No results.");
 			}
-			System.out.println(printResults);
+			Helper.log.info(printResults);
 		} catch (CabinetSearchException e) {
-			System.out.println(e.getMessage());
+			Helper.log.error(e.getMessage());
 		}
 	}
 
