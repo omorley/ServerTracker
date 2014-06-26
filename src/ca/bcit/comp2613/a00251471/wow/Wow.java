@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import org.apache.log4j.Logger;
 
@@ -141,11 +144,18 @@ public class Wow {
 	}
 
 	private static void printCharacters(ArrayList<Character> characters) {
-		for (Character character : characters) {
-			//TODO how do I print out the character's armour?
-			System.out.println("Level: " + character.getLevel() + ", Strength " + character.getStrength()  + ", Armour " + character.getArmour() + ", Race: " + character.getRace());
+//		for (Character character : characters) {
+//			//TODO how do I print out the character's armour?
+//			System.out.println("Level: " + character.getLevel() + ", Strength " + character.getStrength()  + ", Armour " + character.getArmour() + ", Race: " + character.getRace());
+//		}
+		ObjectMapper objectMapper = new ObjectMapper();
+		try
+		{
+			String jsonStr = objectMapper.writeValueAsString(characters);
+			System.out.println(jsonStr);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
-
 	}
 	
 	private static void checkForPandaren(ArrayList<Character> characters) throws DontHaveTheExpansionException {
