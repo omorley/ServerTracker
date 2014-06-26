@@ -1,15 +1,17 @@
 package ca.bcit.comp2613.a00251471.wow;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -149,11 +151,18 @@ public class Wow {
 //			System.out.println("Level: " + character.getLevel() + ", Strength " + character.getStrength()  + ", Armour " + character.getArmour() + ", Race: " + character.getRace());
 //		}
 		ObjectMapper objectMapper = new ObjectMapper();
-		try
-		{
-			String jsonStr = objectMapper.writeValueAsString(characters);
+		String jsonStr;
+		try {
+			jsonStr = objectMapper.writeValueAsString(characters);
 			System.out.println(jsonStr);
-		} catch (JsonProcessingException e) {
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
