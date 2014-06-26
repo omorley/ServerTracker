@@ -1,7 +1,9 @@
 package ca.bcit.comp2613.a00251471.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
+
 
 
 
@@ -18,6 +20,7 @@ import java.io.IOException;
 import ca.bcit.comp2613.servertracker.model.*;
 
 import java.util.Random;
+import java.util.List;
 
 
 public class Helper {
@@ -38,7 +41,7 @@ public class Helper {
 	// http://www.wines.com/pronunciation-wine-names.html + grep \( test | sed 's/\(.*\) (.*/\1/' | awk '{print $1}' | grep -v \\. | grep -vE ^A$ | grep -v The | sort | uniq | sed ':a;N;$!ba;s/\n/ /g'
 	public static String WINELIST = "Agrafe Alsace An Anjou Appellation Assemblage Asti Auslese Ausone Avignon Bacchus Ban Bandol Barbaresco Barbera Bardolino Barolo Barrique Beaujolais Beaune Beerenauslese Bellet Bereich Bernkastel Beycheville Bianco Bienvenues Blanc Blanchot Bocksbeutel Bonnes-Mares Bordeaux Bottled Bougros Bourgogne Bourgueil Brane-Cantenac Brouilly Brut Cabernet Calon-Segur Campania Canon Carbonnieux Cassis Certan-de-May Chablis Chaintre Chambertin Chambolle-Musigny Champagne Charmes Chassagne-Montrachet Chasselas Chasse-Spleen Chateau Chenas Cheval Chianti Chinon Chiroubles Classified Climat Climens Clos Commune Condrieu Corton Cos Cos-Labory Cote Coteaux Cotes Coutet Criots Cuvee Degorgement Deuxieme Dionysus Dom Dominode Dordogne Dosage Ducru-Beaucaillou Durfort-Vivens Echezeaux Eigene Einsellage Eiswein Emilia-Romagna En Enkirch Entre-Deux-Mers Epenots Epluchage Erbach Est! Falerno Falfas Feves Figeac Finest Fixin Flagey-Echezeaux Fleurie Fleur-Pourret Frascati Frecciarossa Fuder Fuisse Gamay Garonne Gazin Gebeit Gevrey-Chambertin Gewurztraminer Gironde Givry Goldtropfchen Goutte Graach Grand Grands Graves Gravieres Grenouille Greves Grillet Grosslage Gruaud-Larose Grumello Guiraud Haut-Bailly Haut-Brion Hermitage Himmelreich Hipping Hochheim Ile Inferno Issan Johannisberg Julienas Kabinett Karthauserhofberg Kupfergrube La Lacryma Lafite-Rothschild Lafon-Rochet Lake Lambrusco Lascombes Latium Latour Le Leiwen Lenchen Leognan Leoville-Barton Leoville-Lascases Leoville-Poyfere Les Liebfraumilch Liqueur Lirac Loire Lombardy Macon Macon-Villages Magdelaine Malbec Marbuzet Marc Marche Marcobrunn Marconnets Margaux Marsala Marseillaise Martillac Maximin Mazis-Chambertin Medoc Mercurey Merlot Meursault Mission-Haut-Brion Mit Montagny Montefiascone Monthelie Montrachet Montrose Monts Morgon Moselblumchen Most Moulin-a-Vent Mouton-Rothschild Muscadet Musigny Nahe Native Nebbiolo Negociant Nierstein Nuits Oestrich Olivier Oppenheim Orvieto PalatinateRheinpfalz Palette Palmer Paniers Pape Passe-tous-Grains Pauillac Pavie Pernand-Vergelesses Pessac Petit Petit-Village Petrus Phelan-Segur Phylloxera Pichon-Lalande Pichon-Longueville Piedmont Pinot Piron Pomerol Pommard Pouilly-Fuisse Pouilly-Fume Pouilly-Loche Pouilly-sur-Loire Pouilly-Vinzelles Premeaux Premiere Preuses Provence Puligny-Montrachet Pupitres Qualitatswein Quarts Quincy Rausan-Segla Rauzan-Gassies Rayne-Vigneau Rebeche Remuage Reuilly Rheims Rheingau Rheinhesse Rheinpfalz/Palatinate Richebourg Riesling Rieussec Romanee Romanee-Conti Rose Rotenfels Rudesheim Rudesheimer Rugiens Rully Ruwer Saar Saint-Amour Saint-Marc Sancerre Santenay Santenote Sassella Saumur Sauternes Sauvignon Savennieres Savigny-les-Beaune Scharzhof Schloss Sec Semillon Sicily Slanting Small Soave Solutre Sonnenuhr Spatlese Steinberg Steinwein Strasbourg Sylvaner Syrah Tafelwein Talbot Talence Tastes Tavel Teurons Tiergarten Traminer Trier Trockenbeerenauslese Tuscany Umbria Valmur Valpolicella Valtellina Vaudesir Verdicchio Vergisson Verona Vieux-Chateau-Certan Villefranche Vin Vino Voignier Volnay Volnay-Santenots Vosges Vosne-Romanee Vougeot Vouvray Wehlen White Wurzburg Yquem Zell Zeller Zeltinger";
 	// http://en.wikipedia.org/wiki/List_of_vodkas + cat test2 | awk '{print $1}' | grep -v \\. | grep -vi the | sort | uniq | sed ':a;N;$!ba;s/\n/ /g'
-	public static String VODKALIST = "42 Absolut Absolwent Adnams Alberta AnestasiA Artic Belaya Belvedere Blavod Bols Bombora Bong Boru Bowman's Boyd Brand Cape Chase Chinggis Chopin Cirrus Ck Clique Cooranbong Cracovia Cîroc Crystal Danzka Deep DOT Double Dovgan Downunder Dragon Dubra Eristoff Explorer Finlandia Firefly Fleischmann's Frïs Glen's Gold Grand Grey Han Hangar Hooghoudt Hrenovuha Iceberg Isensua Jean-Marc Karlsson's Kauffman Keglevich Ketel Khortytsa Kihnu Kissui Kleiner Korski Koskenkorva Krupnik Kryshtal Kubanskaya Latvijas L'Chaim Leopold Level Lokka Lotus Luksusowa Magic Minskaya Monopolowa Monte Moskovskaya Murree Narodnaya Nemiroff Nikolai (originally Orloff Oso Pinky Pinnacle Platinka Polar Polonaise Popov Potato Putinka Pyatizvyozdnaya Rachmaninoff Rain Renat Reyka Rodnik Rokk Ruskova Russian SAVVY Schramm Shustov Siwucha SKYY Smirnoff Snow Sobieski Soplica Soyuz-Viktan Spendrups Square Starka Stolichnaya Stolnaya Stumbras Svedka Taaka Three Tito's Ultimat U'Luvka Ursus UV V44 Van Vikingfjord Villa Viru VKA Vladivar Vodka Vox White Wisent Wyborowa Xan Xellent Youri Zaranoff Zodiac";
+	public static String VODKALIST = "42 Absolut Absolwent Adnams Alberta AnestasiA Artic Belaya Belvedere Blavod Bols Bombora Bong Boru Bowman's Boyd Brand Cape Chase Chinggis Chopin Cirrus Ck Clique Cooranbong Cracovia Cï¿½roc Crystal Danzka Deep DOT Double Dovgan Downunder Dragon Dubra Eristoff Explorer Finlandia Firefly Fleischmann's Frï¿½s Glen's Gold Grand Grey Han Hangar Hooghoudt Hrenovuha Iceberg Isensua Jean-Marc Karlsson's Kauffman Keglevich Ketel Khortytsa Kihnu Kissui Kleiner Korski Koskenkorva Krupnik Kryshtal Kubanskaya Latvijas L'Chaim Leopold Level Lokka Lotus Luksusowa Magic Minskaya Monopolowa Monte Moskovskaya Murree Narodnaya Nemiroff Nikolai (originally Orloff Oso Pinky Pinnacle Platinka Polar Polonaise Popov Potato Putinka Pyatizvyozdnaya Rachmaninoff Rain Renat Reyka Rodnik Rokk Ruskova Russian SAVVY Schramm Shustov Siwucha SKYY Smirnoff Snow Sobieski Soplica Soyuz-Viktan Spendrups Square Starka Stolichnaya Stolnaya Stumbras Svedka Taaka Three Tito's Ultimat U'Luvka Ursus UV V44 Van Vikingfjord Villa Viru VKA Vladivar Vodka Vox White Wisent Wyborowa Xan Xellent Youri Zaranoff Zodiac";
 	/**
 	 * Create max number of servers
 	 */
@@ -223,4 +226,42 @@ public class Helper {
 	    int randomNum = rand.nextInt((max - min) + 1) + min;
 	    return randomNum;
 	}
+	
+	/**
+	 * Update entry of a server, add entry as needed
+	 * @param servers
+	 * @param server
+	 */
+	public static void save(List<Server> servers, Server server) {
+		boolean foundUpdate = false;
+		for (Server serverloop: servers) {
+			if (serverloop.getId().equals(server.getId())) {
+				serverloop.setName(server.getName());
+				serverloop.setIp(server.getIp());
+				foundUpdate = true;
+				break;
+			}
+		}
+		if (!foundUpdate) { // do an insert
+			servers.add(server);
+		}
+	}
+	
+	/**
+	 * Remvoe entry of a server
+	 * @param servers
+	 * @param server
+	 */
+	public static void delete(List<Server> servers, Server server) {
+		Iterator<Server> iter = servers.iterator();
+		while (iter.hasNext()) {
+			Server serverLoop = iter.next();
+			if (serverLoop.getId().equals(server.getId())) {
+				iter.remove();
+				break;
+			}
+		}
+	}
+
+
 }

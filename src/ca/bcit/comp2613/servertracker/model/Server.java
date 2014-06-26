@@ -53,6 +53,17 @@ public class Server {
 		setName(name);
 	}
 	/**
+	 * @param id
+	 * @param name
+	 * @param ip
+	 */
+	public Server(String id,String name,String ip) {
+		super();
+		setId(id);
+		setName(name);
+		setIp(ip);
+	}
+	/**
 	 * @return the name
 	 */
 	public String getName() {
