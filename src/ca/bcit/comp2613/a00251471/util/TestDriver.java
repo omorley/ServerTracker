@@ -11,8 +11,7 @@ import java.util.List;
 
 import ca.bcit.comp2613.a00251471.util.Helper;
 import ca.bcit.comp2613.a00251471.util.FillCabinetsException;
-import ca.bcit.comp2613.servertracker.model.Cabinet;
-import ca.bcit.comp2613.servertracker.model.Server;
+import ca.bcit.comp2613.servertracker.model.*;
 
 /**
  * @author Owen
@@ -27,15 +26,15 @@ public class TestDriver {
 	
 		//nameSearch();
 		//random100();
-//		try {
-//			fillCabinets(20,5);
-//		} catch (FillCabinetsException e) {
-//			Helper.log.error(e.getMessage());
-//		} catch (CriticalFillCabinetsException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			fillCabinets(20,5);
+		} catch (FillCabinetsException e) {
+			Helper.log.error(e.getMessage());
+		} catch (CriticalFillCabinetsException e) {
+			e.printStackTrace();
+		}
 //		nameSearch();
-		sortServers();
+//		sortServers();
 		}
 	
 	/**
@@ -71,24 +70,39 @@ public class TestDriver {
 	 */
 	public static void fillCabinets(int numberOfCabinets,int serversPerCab) throws FillCabinetsException,CriticalFillCabinetsException {
 		int currentServer = 0;
-		Random rand = new Random();
-		int randomFail = rand.nextInt(); 
-		if (randomFail % 100 == 0) {
-			throw new CriticalFillCabinetsException("Error, we are the 1%!");
-		} else if (randomFail % 20 == 0) {
-			throw new FillCabinetsException("Error, we are the 5%!");
-		}
+//		Random failing is sooooooo last assignment ;)
+//		Random rand = new Random();
+//		int randomFail = rand.nextInt(); 
+//		if (randomFail % 100 == 0) {
+//			throw new CriticalFillCabinetsException("Error, we are the 1%!");
+//		} else if (randomFail % 20 == 0) {
+//			throw new FillCabinetsException("Error, we are the 5%!");
+//		}
 		ArrayList<Server> servers = Helper.createServers();
 		ArrayList<Cabinet> cabinets = Helper.createCabinets(numberOfCabinets);
-		for (Cabinet cabinet:cabinets) {
-			for (int i = 0; i < serversPerCab; i++) {
-				cabinet.addServer(servers.get(currentServer));
-				currentServer++;
-			}
-		}
+//		for (Cabinet cabinet:cabinets) {
+//			for (int i = 0; i < serversPerCab; i++) {
+//				cabinet.addServer(servers.get(currentServer));
+//				servers.get(currentServer).setPowerCCT(getRandomCCT(cabinet));
+//				currentServer++;
+//			}
+//		}
+		Helper.doCreateCabinets(cabinets,servers,numberOfCabinets,serversPerCab);
 		for (Cabinet cabinet:cabinets) {
 			Helper.log.info("Servers in " + cabinet.getName() + ":\n" + cabinet.listServers() + "\n");
 		}
+	}
+	
+	public static PowerCCT getRandomCCT(Cabinet cabinet) {		
+		if (cabinet.numberOfCCTs() <= 0) {
+			return null;
+		}
+		Random rand = new Random();
+		int randomCCT = rand.nextInt() % cabinet.numberOfCCTs();
+		if (randomCCT < 0) {
+			randomCCT = randomCCT * -1;
+		}
+		return cabinet.getPowerCCT(randomCCT);
 	}
 	
 	// Test searching for name in objects

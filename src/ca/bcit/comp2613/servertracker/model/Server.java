@@ -28,8 +28,8 @@ public class Server {
 	private String serviceTag;
 	// Date of warranty expiration
 	private int warrantyExpiration;
-	// External storage assigned to server
-	private ExternalStorage externalStorage;
+//	// External storage assigned to server
+//	private ExternalStorage externalStorage;
 	// Power cct used for server
 	private PowerCCT powerCCT;
 	// String id because I'm told to have it
@@ -183,18 +183,18 @@ public class Server {
 	public void setWarrantyExpiration(int warrantyExpiration) {
 		this.warrantyExpiration = warrantyExpiration;
 	}
-	/**
-	 * @return the externalStorage
-	 */
-	public ExternalStorage getExternalStorage() {
-		return externalStorage;
-	}
-	/**
-	 * @param externalStorageStorage the externalStorage to set
-	 */
-	public void setExternalStorage(ExternalStorage externalStorage) {
-		this.externalStorage = externalStorage;
-	}
+//	/**
+//	 * @return the externalStorage
+//	 */
+//	public ExternalStorage getExternalStorage() {
+//		return externalStorage;
+//	}
+//	/**
+//	 * @param externalStorageStorage the externalStorage to set
+//	 */
+//	public void setExternalStorage(ExternalStorage externalStorage) {
+//		this.externalStorage = externalStorage;
+//	}
 	/**
 	 * @return the powerCCT
 	 */
@@ -228,6 +228,7 @@ public class Server {
 	public void setServerStatus(ServerStatus serverStatus) {
 		this.serverStatus = serverStatus;
 	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -242,7 +243,7 @@ public class Server {
 				+ getCores() + ", getMemory()=" + getMemory()
 				+ ", getServiceTag()=" + getServiceTag()
 				+ ", getWarrantyExpiration()=" + getWarrantyExpiration()
-				+ ", getExternalStorage()=" + getExternalStorage()
+//				+ ", getExternalStorage()=" + getExternalStorage()
 				+ ", getPowerCCT()=" + getPowerCCT() + ", getId()=" + getId()
 				+ "]";
 	}

@@ -4,7 +4,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.UUID;
+//import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -67,7 +67,7 @@ public class ServerTrackerSwingApplication {
 		Helper.save(servers, server);
 		//table.clearSelection();
 		refreshTable();
-	}
+		}
 	
 	public void doDelete() {
 		String id = idTextField.getText();
@@ -77,12 +77,49 @@ public class ServerTrackerSwingApplication {
 	}
 	
 	public void doNew() {
-		String id = UUID.randomUUID().toString();
+		String id = getNextId();
 		idTextField.setText(id);
 		serverNameTextField.setText("");
 		serverIPTextField.setText("");
 	}
+	
+	/**
+	 * 
+	 * @return next available ID based on highest in use
+	 */
+	public String getNextId() {
+		int searchLocation;
+		if (servers.size() > 0) {
+			searchLocation = servers.size()-1;
+		} else {
+			searchLocation = 0;
+		}
+		
+		System.out.println("Test: " + findId("5"));
+		boolean foundId = false;
+		while (! foundId) {
+			searchLocation++;
+			if (findId(String.valueOf(searchLocation)) == null) {
+				foundId = true;
+			}
+		}
+		return String.valueOf(searchLocation);
+	}
 
+	/**
+	 * Search for a specific ID in the server's list
+	 * @param id
+	 * @return
+	 */
+	public String findId(String id) {
+		for (Server server : servers) {
+			if (server.getId().contentEquals(id)) {
+				return id;
+			}
+		}
+		return null;
+	}
+	
 	private void initTable() {
 
 		// table = new JTable(swingTeacherModel);
@@ -122,6 +159,7 @@ public class ServerTrackerSwingApplication {
 			data[i][0] = server.getId();
 			data[i][1] = server.getName();
 			data[i][2] = server.getIp();
+//			System.out.println("Name: " + server.getName() + " IP: " + server.getIp());
 			i++;
 		}
 		swingServerTrackerModel.setDataVector(data, columnNames);

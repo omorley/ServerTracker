@@ -14,7 +14,8 @@ public class Cabinet {
 	// Facility cabinet resides in
 	private String facility;
 	// Power ccts installed in cabinet
-	private PowerCCT powerCircuits;
+	//private PowerCCT powerCircuits;
+	private ArrayList<PowerCCT> powerCircuits;
 	// String id because I'm told to have it
 	private String id;
 	// Arraylist of servers
@@ -30,6 +31,7 @@ public class Cabinet {
 	public Cabinet() {
 		super();
 		servers = new ArrayList<Server>();
+		powerCircuits = new ArrayList<PowerCCT>();
 	}
 	/**
 	 * @param name
@@ -38,6 +40,7 @@ public class Cabinet {
 		super();
 		setName(name);
 		servers = new ArrayList<Server>();
+		powerCircuits = new ArrayList<PowerCCT>();
 	}
 	/**
 	 * @return the name
@@ -64,18 +67,6 @@ public class Cabinet {
 		this.facility = facility;
 	}
 	/**
-	 * @return the powerCircuits
-	 */
-	public PowerCCT getPowerCircuits() {
-		return powerCircuits;
-	}
-	/**
-	 * @param powerCircuits the powerCircuits to set
-	 */
-	public void setPowerCircuits(PowerCCT powerCircuits) {
-		this.powerCircuits = powerCircuits;
-	}
-	/**
 	 * @return the id
 	 */
 	public String getId() {
@@ -93,7 +84,7 @@ public class Cabinet {
 	@Override
 	public String toString() {
 		return "Cabinet [getName()=" + getName() + ", getFacility()="
-				+ getFacility() + ", getPowerCircuits()=" + getPowerCircuits()
+				+ getFacility() + ", getPowerCircuits()=" + listPowerCCTs()
 				+ ", getId()=" + getId() + "]";
 	}
 	/*
@@ -127,6 +118,50 @@ public class Cabinet {
 		}
 		return returnValue;
 	}
+	/*
+	 * Method to add a circuit to PowerCCT ArrayList
+	 * @param PowerCCT the circuit to add
+	 */
+	public void addPowerCCT(PowerCCT circuit) {
+		if (! powerCircuits.contains(circuit)) {
+			powerCircuits.add(circuit);
+		}
+	}
+	/*
+	 * Method to remove a circuit from PowerCCT ArrayList
+	 * @param PowerCCT the circuit to remove
+	 */
+	public void removePowerCCT(PowerCCT circuit) {
+		if (powerCircuits.contains(circuit)) {
+			powerCircuits.remove(circuit);
+		}
+	}
 	
+	public PowerCCT getPowerCCT(int cctNumber) {
+		if (powerCircuits.size() >= cctNumber) {
+			return powerCircuits.get(cctNumber);
+		}
+		return null;
+	}
+
+	/*
+	 * @return the list of circuits
+	 */
+	public String listPowerCCTs() {
+		String returnValue = "";
+		if (powerCircuits.isEmpty()) {
+			return null;
+		}
+		for (PowerCCT circuit: powerCircuits) {
+			returnValue = returnValue + " " + circuit.getName() + "\n";
+		}
+		return returnValue;
+	}
 	
+	/**
+	 * @return Number of power circuits installed in cabinet
+	 */
+	public int numberOfCCTs() {
+		return powerCircuits.size();
+	}
 }
