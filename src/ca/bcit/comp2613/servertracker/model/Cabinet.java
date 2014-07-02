@@ -123,7 +123,7 @@ public class Cabinet {
 	/**
 	 * @return ArrayList containing the servers
 	 */
-	public ArrayList getServersArray() {
+	public ArrayList<Server> getServersArray() {
 		return servers;
 	}
 	

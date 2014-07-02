@@ -8,6 +8,7 @@ import java.util.List;
 //import java.util.UUID;
 
 
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,11 +32,15 @@ public class ServerTrackerCabinetSwingApplication {
 	private JTable table;
 	private JTextField serverNameTextField;
 	private JTextField serverIPTextField;
+	private JTextField cabinetTextField;
+	private JTextField powerCCTTextField;
 	private JLabel lblServerIp;
 	private JLabel lblServerId;
+	private JLabel lblCabinetId;
+	private JLabel lblPowerCCTId;
 	private SwingServerTrackerModel swingServerTrackerModel;
 	public String[] columnNames = new String[] { "id", "Server Name",
-			"Server IP" };
+			"Server IP", "Cabinet", "PowerCCT" };
 	private JTextField idTextField;
 	public static List<Cabinet> cabinets;
 
@@ -74,16 +79,19 @@ public class ServerTrackerCabinetSwingApplication {
 		String id = idTextField.getText();
 		String serverName = serverNameTextField.getText();
 		String serverIP = serverIPTextField.getText();
-		Server server = new Server(id, serverName, serverIP);
-//		Helper.save(cabinets, server);
-		//table.clearSelection();
+		Cabinet serverCabinet = Helper.findFirstCabinetExactName(cabinets, cabinetTextField.getText());
+		PowerCCT powerCircuit = Helper.findFirstPowerCCTExactName(cabinets, powerCCTTextField.getText());
+		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
+		Server server = new Server(id, serverName, serverIP, powerCircuit);
+		Helper.save(cabinets, serverCabinet, server);
+		table.clearSelection();
 		refreshTable();
 		}
 	
 	public void doDelete() {
 		String id = idTextField.getText();
 		Server server = new Server(id, null, null);
-//		Helper.delete(cabinets, server);
+		Helper.delete(cabinets, server);
 		refreshTable();
 	}
 	
@@ -92,6 +100,8 @@ public class ServerTrackerCabinetSwingApplication {
 		idTextField.setText(id);
 		serverNameTextField.setText("");
 		serverIPTextField.setText("");
+		cabinetTextField.setText("");
+		powerCCTTextField.setText("");
 	}
 	
 	/**
@@ -106,7 +116,7 @@ public class ServerTrackerCabinetSwingApplication {
 			searchLocation = 0;
 		}
 		
-		System.out.println("Test: " + findId("5"));
+		System.out.println("Test: " + searchLocation);
 		boolean foundId = false;
 		while (! foundId) {
 			searchLocation++;
@@ -124,10 +134,14 @@ public class ServerTrackerCabinetSwingApplication {
 	 */
 	public String findId(String id) {
 		for (Cabinet cabinet : cabinets) {
-			if (cabinet.getId().contentEquals(id)) {
-				return id;
+			for (Server server : cabinet.getServersArray()) {
+				if (server.getId().contentEquals(id)) {
+					return id;
+				}
 			}
+			
 		}
+
 		return null;
 	}
 	
@@ -157,21 +171,27 @@ public class ServerTrackerCabinetSwingApplication {
 					.getValueAt(table.getSelectedRow(), 1).toString());
 			serverIPTextField.setText(table.getModel()
 					.getValueAt(table.getSelectedRow(), 2).toString());
+			cabinetTextField.setText(table.getModel()
+					.getValueAt(table.getSelectedRow(), 3).toString());
+			powerCCTTextField.setText(table.getModel()
+					.getValueAt(table.getSelectedRow(), 4).toString());
 		} catch (Exception e) {}
 	}
 	
 	private void refreshTable() {
 		// swingTeacherModel = new SwingTeacherModel();
 		Object[][] data = null;
+		data = new Object[countServers(cabinets)][5];
 		int i = 0;
+		
 		for (Cabinet cabinet : cabinets) {
-			System.out.println("Cabinet: " + cabinet.getName() + " Server List Size: " + cabinet.getServersArray().size());
 			ArrayList<Server> currentCabinet = cabinet.getServersArray();
 			for (Server server : currentCabinet) {
 				data[i][0] = server.getId();
 				data[i][1] = server.getName();
 				data[i][2] = server.getIp();
-							System.out.println("Name: " + server.getName() + " IP: " + server.getIp());
+				data[i][3] = cabinet.getName();
+				data[i][4] = server.getPowerCCT().getName();
 				i++;
 			}
 		}
@@ -179,12 +199,20 @@ public class ServerTrackerCabinetSwingApplication {
 		table.repaint();
 	}
 	
+	private int countServers(List<Cabinet> cabinets) {
+		int serverCount = 0;
+		for (Cabinet cabinet : cabinets) {
+			serverCount+= cabinet.getServersArray().size();
+		}
+		return serverCount;
+	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 601, 499);
+		frame.setBounds(100, 100, 1202, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -198,14 +226,14 @@ public class ServerTrackerCabinetSwingApplication {
 		// table.setBounds(0, 11, 585, 247);
 		table.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(0, 11, 585, 247);
+		scrollPane.setBounds(0, 11, 1170, 247);
 		frame.getContentPane().add(scrollPane);
 		// scrollPane.add(table);
 		// frame.getContentPane().add(table);
 
-		JLabel lblFirstName = new JLabel("Server Name");
-		lblFirstName.setBounds(44, 330, 103, 14);
-		frame.getContentPane().add(lblFirstName);
+		JLabel lblServerName = new JLabel("Server Name");
+		lblServerName.setBounds(44, 330, 103, 14);
+		frame.getContentPane().add(lblServerName);
 
 		serverNameTextField = new JTextField();
 		serverNameTextField.setBounds(159, 327, 325, 20);
@@ -225,13 +253,32 @@ public class ServerTrackerCabinetSwingApplication {
 		lblServerId.setBounds(44, 288, 46, 14);
 		frame.getContentPane().add(lblServerId);
 
+		cabinetTextField = new JTextField();
+		cabinetTextField.setBounds(159, 412, 325, 20);
+		frame.getContentPane().add(cabinetTextField);
+		cabinetTextField.setColumns(10);
+
+		lblCabinetId = new JLabel("Cabinet");
+		lblCabinetId.setBounds(44, 412, 77, 14);
+		frame.getContentPane().add(lblCabinetId);
+
+		powerCCTTextField = new JTextField();
+		powerCCTTextField.setBounds(159, 459, 325, 20);
+		frame.getContentPane().add(powerCCTTextField);
+		powerCCTTextField.setColumns(10);
+
+		lblPowerCCTId = new JLabel("Power CCT");
+		lblPowerCCTId.setBounds(44, 459, 77, 14);
+		frame.getContentPane().add(lblPowerCCTId);
+
+		
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				doSave();
 			}
 		});
-		btnSave.setBounds(44, 412, 89, 23);
+		btnSave.setBounds(44, 506, 89, 23);
 		frame.getContentPane().add(btnSave);
 
 		JButton btnDelete = new JButton("Delete");
@@ -240,7 +287,7 @@ public class ServerTrackerCabinetSwingApplication {
 				doDelete();
 			}
 		});
-		btnDelete.setBounds(169, 412, 89, 23);
+		btnDelete.setBounds(169, 506, 89, 23);
 		frame.getContentPane().add(btnDelete);
 
 		JButton btnNewButton = new JButton("New");

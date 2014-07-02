@@ -64,6 +64,19 @@ public class Server {
 		setIp(ip);
 	}
 	/**
+	 * @param id
+	 * @param name
+	 * @param ip
+	 * @param powerCCT
+	 */
+	public Server(String id,String name,String ip,PowerCCT powerCCT) {
+		super();
+		setId(id);
+		setName(name);
+		setIp(ip);
+		setPowerCCT(powerCCT);
+	}
+	/**
 	 * @return the name
 	 */
 	public String getName() {
