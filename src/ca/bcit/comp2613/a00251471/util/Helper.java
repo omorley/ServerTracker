@@ -17,6 +17,7 @@ import java.util.Random;
 
 
 
+
 //Log4j
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -72,10 +73,10 @@ public class Helper {
 	 * @return ArrayList of fully populated cabinets
 	 */
 
-	public static ArrayList<Cabinet> fillCabinets(int i, int j) {
+	public static ArrayList<Cabinet> fillCabinets(int numberOfCabinets, int serversPerCab) {
 		ArrayList<Server> servers = createServers();
-		ArrayList<Cabinet> cabinets = createCabinets(i);
-		doPopulateCabinets(cabinets,servers,i,j);
+		ArrayList<Cabinet> cabinets = createCabinets(numberOfCabinets);
+		doPopulateCabinets(cabinets,servers,numberOfCabinets,serversPerCab);
 		return cabinets;
 	}
 
@@ -266,6 +267,38 @@ public class Helper {
 	}
 
 	/**
+	 * Find power cct by exact name match
+	 * @param cabinets
+	 * @param circuitName
+	 * @return
+	 */
+	public static PowerCCT findFirstPowerCCTExactName(List<Cabinet> cabinets,String circuitName) {
+		for (Cabinet cabinet : cabinets) {
+			for (PowerCCT powerCCT : cabinet.getPowerCCTArray()) {
+				if (powerCCT.getName().equals(circuitName)) {
+					return powerCCT;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Find first cabinet by exact name match
+	 * @param cabinets
+	 * @param cabinetName
+	 * @return
+	 */
+	public static Cabinet findFirstCabinetExactName(List<Cabinet> cabinets,String cabinetName) {
+		for (Cabinet cabinet : cabinets) {
+			if (cabinet.getName().equals(cabinetName)) {
+				return cabinet;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Find cabinet by exact name match
 	 * @param cabinets
 	 * @param cabinetName
@@ -314,37 +347,39 @@ public class Helper {
 	 * @param servers
 	 * @param server
 	 */
-	public static void save(List<Server> servers, Server server) {
+	public static void save(List<Cabinet> cabinets, Cabinet newCabinet, Server server) {
 		boolean foundUpdate = false;
-		for (Server serverloop: servers) {
-			if (serverloop.getId().equals(server.getId())) {
-				serverloop.setName(server.getName());
-				serverloop.setIp(server.getIp());
-				foundUpdate = true;
-				break;
+		for (Cabinet cabinet : cabinets) {
+			for (Server serverloop: cabinet.getServersArray()) {
+				if (serverloop.getId().equals(server.getId())) {
+					serverloop.setName(server.getName());
+					serverloop.setIp(server.getIp());
+					foundUpdate = true;
+					break;
+				}
 			}
 		}
 		if (!foundUpdate) { // do an insert
-			servers.add(server);
+			newCabinet.addServer(server);
 		}
 	}
 	
 	/**
-	 * Remvoe entry of a server
+	 * Remove entry of a server
 	 * @param servers
 	 * @param server
 	 */
-	public static void delete(List<Server> servers, Server server) {
-		Iterator<Server> iter = servers.iterator();
-		while (iter.hasNext()) {
-			Server serverLoop = iter.next();
-			if (serverLoop.getId().equals(server.getId())) {
-				iter.remove();
-				break;
+	public static void delete(List<Cabinet> cabinets, Server server) {
+		for (Cabinet cabinet : cabinets) {
+			Iterator<Server> iter = cabinet.getServersArray().iterator();
+			while (iter.hasNext()) {
+				Server serverLoop = iter.next();
+				if (serverLoop.getId().equals(server.getId())) {
+					iter.remove();
+					break;
+				}
 			}
 		}
 	}
-
-
 
 }

@@ -24,12 +24,8 @@ public class TestDriver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ArrayList<Server> servers = Helper.createServers();
-		ArrayList<Cabinet> cabinets = Helper.createCabinets(25);
-		Helper.doPopulateCabinets(cabinets,servers,25,5);
-		ServerTrackerCabinetSwingApplication newWindow = new ServerTrackerCabinetSwingApplication(cabinets);
+		ServerTrackerCabinetSwingApplication newWindow = new ServerTrackerCabinetSwingApplication(Helper.fillCabinets(25, 5));
 		newWindow.frame.setVisible(true);
-		System.out.println("Running...");
 		//nameSearch();
 		//random100();
 //		try {
@@ -84,8 +80,8 @@ public class TestDriver {
 //		} else if (randomFail % 20 == 0) {
 //			throw new FillCabinetsException("Error, we are the 5%!");
 //		}
-		ArrayList<Server> servers = Helper.createServers();
-		ArrayList<Cabinet> cabinets = Helper.createCabinets(numberOfCabinets);
+//		ArrayList<Server> servers = Helper.createServers();
+//		ArrayList<Cabinet> cabinets = Helper.createCabinets(numberOfCabinets);
 //		for (Cabinet cabinet:cabinets) {
 //			for (int i = 0; i < serversPerCab; i++) {
 //				cabinet.addServer(servers.get(currentServer));
