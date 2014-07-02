@@ -3,14 +3,14 @@
  */
 package ca.bcit.comp2613.a00251471.util;
 
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.List;
 
-import ca.bcit.comp2613.a00251471.util.Helper;
-import ca.bcit.comp2613.a00251471.util.FillCabinetsException;
+import ca.bcit.comp2613.a00251471.util.*;
 import ca.bcit.comp2613.servertracker.model.*;
 
 /**
@@ -18,24 +18,30 @@ import ca.bcit.comp2613.servertracker.model.*;
  *
  */
 public class TestDriver {
+	public static List<Cabinet> freshCabinets = new ArrayList<Cabinet>();
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-	
+		ArrayList<Server> servers = Helper.createServers();
+		ArrayList<Cabinet> cabinets = Helper.createCabinets(25);
+		Helper.doPopulateCabinets(cabinets,servers,25,5);
+		ServerTrackerCabinetSwingApplication newWindow = new ServerTrackerCabinetSwingApplication(cabinets);
+		newWindow.frame.setVisible(true);
+		System.out.println("Running...");
 		//nameSearch();
 		//random100();
-		try {
-			fillCabinets(20,5);
-		} catch (FillCabinetsException e) {
-			Helper.log.error(e.getMessage());
-		} catch (CriticalFillCabinetsException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			fillCabinets(20,5);
+//		} catch (FillCabinetsException e) {
+//			Helper.log.error(e.getMessage());
+//		} catch (CriticalFillCabinetsException e) {
+//			e.printStackTrace();
+//		}
 //		nameSearch();
 //		sortServers();
-		}
+	}
 	
 	/**
 	 * Return list of servers, sorted in reverse order by power utilization
@@ -64,12 +70,12 @@ public class TestDriver {
 	}
 	
 	
-	/**
-	 * @param numberOfCabinets number of cabinets to create
-	 * @param serversPerCab number of servers per cabinet
-	 */
-	public static void fillCabinets(int numberOfCabinets,int serversPerCab) throws FillCabinetsException,CriticalFillCabinetsException {
-		int currentServer = 0;
+//	/**
+//	 * @param numberOfCabinets number of cabinets to create
+//	 * @param serversPerCab number of servers per cabinet
+//	 */
+//	public static void fillCabinets(int numberOfCabinets,int serversPerCab) throws FillCabinetsException,CriticalFillCabinetsException {
+//		int currentServer = 0;
 //		Random failing is sooooooo last assignment ;)
 //		Random rand = new Random();
 //		int randomFail = rand.nextInt(); 
@@ -87,23 +93,11 @@ public class TestDriver {
 //				currentServer++;
 //			}
 //		}
-		Helper.doCreateCabinets(cabinets,servers,numberOfCabinets,serversPerCab);
-		for (Cabinet cabinet:cabinets) {
-			Helper.log.info("Servers in " + cabinet.getName() + ":\n" + cabinet.listServers() + "\n");
-		}
-	}
-	
-	public static PowerCCT getRandomCCT(Cabinet cabinet) {		
-		if (cabinet.numberOfCCTs() <= 0) {
-			return null;
-		}
-		Random rand = new Random();
-		int randomCCT = rand.nextInt() % cabinet.numberOfCCTs();
-		if (randomCCT < 0) {
-			randomCCT = randomCCT * -1;
-		}
-		return cabinet.getPowerCCT(randomCCT);
-	}
+//		Helper.doPopulateCabinets(cabinets,servers,numberOfCabinets,serversPerCab);
+//		for (Cabinet cabinet:cabinets) {
+//			Helper.log.info("Servers in " + cabinet.getName() + ":\n" + cabinet.listServers() + "\n");
+//		}
+//	}
 	
 	// Test searching for name in objects
 	public static void nameSearch() {

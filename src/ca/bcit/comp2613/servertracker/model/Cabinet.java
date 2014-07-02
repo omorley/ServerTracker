@@ -105,6 +105,7 @@ public class Cabinet {
 			servers.remove(server);
 		}
 	}
+	
 	/*
 	 * @return the list of servers
 	 */
@@ -118,6 +119,14 @@ public class Cabinet {
 		}
 		return returnValue;
 	}
+
+	/**
+	 * @return ArrayList containing the servers
+	 */
+	public ArrayList getServersArray() {
+		return servers;
+	}
+	
 	/*
 	 * Method to add a circuit to PowerCCT ArrayList
 	 * @param PowerCCT the circuit to add
@@ -137,11 +146,11 @@ public class Cabinet {
 		}
 	}
 	
-	public PowerCCT getPowerCCT(int cctNumber) {
-		if (powerCircuits.size() >= cctNumber) {
-			return powerCircuits.get(cctNumber);
-		}
-		return null;
+	/**
+	 * @return ArrayList containing the power circuits
+	 */
+	public ArrayList<PowerCCT> getPowerCCTArray() {
+		return powerCircuits;
 	}
 
 	/*

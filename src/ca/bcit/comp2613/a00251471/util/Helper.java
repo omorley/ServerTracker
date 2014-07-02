@@ -9,6 +9,14 @@ import java.util.Random;
 
 
 
+
+
+
+
+
+
+
+
 //Log4j
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -57,7 +65,21 @@ public class Helper {
 		doCreateServers(servers,maxCount,nameList);
 		return servers;
 	}
-	
+
+	/**
+	 * Builds cabinets, fills them with servers and returns an arraylist of them
+	 * 
+	 * @return ArrayList of fully populated cabinets
+	 */
+
+	public static ArrayList<Cabinet> fillCabinets(int i, int j) {
+		ArrayList<Server> servers = createServers();
+		ArrayList<Cabinet> cabinets = createCabinets(i);
+		doPopulateCabinets(cabinets,servers,i,j);
+		return cabinets;
+	}
+
+
 	/**
 	 * @param instances the number of instances to create in list
 	 */	
@@ -79,7 +101,7 @@ public class Helper {
 	 * @param maxCount
 	 * @param nameList
 	 */
-	public static void doCreateServers(ArrayList servers,int maxCount,String[] nameList) {
+	public static void doCreateServers(ArrayList<Server> servers,int maxCount,String[] nameList) {
 		for (int i = 0; i < maxCount; i++) {
 			Server server = new Server();
 			server.setId(Integer.toString(i));
@@ -92,21 +114,19 @@ public class Helper {
 	}
 
 	/**
-	 * 
-	 * @param cabinets
-	 * @param servers
-	 * @param numberOfCabinets
-	 * @param serversPerCab
+	 * @param cabinet
+	 * @return
 	 */
-	public static void doCreateCabinets(ArrayList cabinets,ArrayList servers,int numberOfCabinets,int serversPerCab) {
-		int currentServer = 0;
-		for (Object cabinet:cabinets) {
-			for (int i = 0; i < serversPerCab; i++) {
-				((Cabinet) cabinet).addServer((Server) servers.get(currentServer));
-				((Server) servers.get(currentServer)).setPowerCCT(getRandomCCT(((Cabinet) cabinet)));
-				currentServer++;
-			}
+	public static PowerCCT getRandomCCT(Cabinet cabinet) {		
+		if (cabinet.numberOfCCTs() <= 0) {
+			return null;
 		}
+		Random rand = new Random();
+		int randomCCT = rand.nextInt() % cabinet.numberOfCCTs();
+		if (randomCCT < 0) {
+			randomCCT = randomCCT * -1;
+		}
+		return cabinet.getPowerCCTArray().get(randomCCT);
 	}
 	
 
@@ -132,7 +152,7 @@ public class Helper {
 		ArrayList<Cabinet> cabinets = new ArrayList<>();
 		String[] nameList = VODKALIST.split("\\s");
 		int maxCount = nameList.length;
-		doCreateCabinets(cabinets,maxCount,nameList);
+		doBuildCabinets(cabinets,maxCount,nameList);
 		return cabinets;
 	}
 	
@@ -148,16 +168,17 @@ public class Helper {
 		} else {
 			maxCount = nameList.length;
 		}
-		doCreateCabinets(cabinets,maxCount,nameList);
+		doBuildCabinets(cabinets,maxCount,nameList);
 		return cabinets;
 	}
+	
 
 	/**
 	 * @param cabinets
 	 * @param maxCount
 	 * @param nameList
 	 */
-	public static void doCreateCabinets(ArrayList cabinets,int maxCount,String[] nameList) {
+	public static void doBuildCabinets(ArrayList<Cabinet> cabinets,int maxCount,String[] nameList) {
 		int circuitNumber = 1;
 		for (int i = 0; i < maxCount; i++) {
 			Cabinet cabinet = new Cabinet();
@@ -174,6 +195,24 @@ public class Helper {
 			cabinets.add(cabinet);
 		}
 	}
+	
+	/**
+	 * @param cabinets
+	 * @param servers
+	 * @param numberOfCabinets
+	 * @param serversPerCab
+	 */
+	public static void doPopulateCabinets(ArrayList<Cabinet> cabinets,ArrayList<Server> servers,int numberOfCabinets,int serversPerCab) {
+		int currentServer = 0;
+		for (Object cabinet:cabinets) {
+			for (int i = 0; i < serversPerCab; i++) {
+				((Cabinet) cabinet).addServer((Server) servers.get(currentServer));
+				((Server) servers.get(currentServer)).setPowerCCT(getRandomCCT(((Cabinet) cabinet)));
+				currentServer++;
+			}
+		}
+	}
+	
 	/**
 	 * List all servers	
 	 * @param servers
@@ -305,6 +344,7 @@ public class Helper {
 			}
 		}
 	}
+
 
 
 }
