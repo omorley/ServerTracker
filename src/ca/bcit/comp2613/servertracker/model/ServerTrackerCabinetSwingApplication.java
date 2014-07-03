@@ -1,9 +1,7 @@
 package ca.bcit.comp2613.servertracker.model;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.List;
 //import java.util.UUID;
 
@@ -19,11 +17,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-
 import java.util.ArrayList;
-import java.util.Collections;
-
 import ca.bcit.comp2613.servertracker.model.Server;
 import ca.bcit.comp2613.a00251471.util.Helper;
 
@@ -42,7 +36,7 @@ public class ServerTrackerCabinetSwingApplication {
 	public String[] columnNames = new String[] { "id", "Server Name",
 			"Server IP", "Cabinet", "PowerCCT" };
 	private JTextField idTextField;
-	public static List<Cabinet> cabinets;
+	private static List<Cabinet> cabinets;
 
 	/**
 	 * Launch the application.
@@ -64,13 +58,13 @@ public class ServerTrackerCabinetSwingApplication {
 	 * Create the application.
 	 */
 	public ServerTrackerCabinetSwingApplication() {
-		cabinets = Helper.createCabinets(100);
+		setCabinets(Helper.createCabinets(100));
 		initialize();
 		initTable();
 	}
 
 	public ServerTrackerCabinetSwingApplication(ArrayList<Cabinet> cabinets) {
-		this.cabinets = cabinets;
+		setCabinets(cabinets);
 		initialize();
 		initTable();
 	}
@@ -79,11 +73,11 @@ public class ServerTrackerCabinetSwingApplication {
 		String id = idTextField.getText();
 		String serverName = serverNameTextField.getText();
 		String serverIP = serverIPTextField.getText();
-		Cabinet serverCabinet = Helper.findFirstCabinetExactName(cabinets, cabinetTextField.getText());
-		PowerCCT powerCircuit = Helper.findFirstPowerCCTExactName(cabinets, powerCCTTextField.getText());
+		Cabinet serverCabinet = Helper.findFirstCabinetExactName(getCabinets(), cabinetTextField.getText());
+		PowerCCT powerCircuit = Helper.findFirstPowerCCTExactName(getCabinets(), powerCCTTextField.getText());
 		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
 		Server server = new Server(id, serverName, serverIP, powerCircuit);
-		Helper.save(cabinets, serverCabinet, server);
+		Helper.save(getCabinets(), serverCabinet, server);
 		table.clearSelection();
 		refreshTable();
 		}
@@ -91,7 +85,7 @@ public class ServerTrackerCabinetSwingApplication {
 	public void doDelete() {
 		String id = idTextField.getText();
 		Server server = new Server(id, null, null);
-		Helper.delete(cabinets, server);
+		Helper.delete(getCabinets(), server);
 		refreshTable();
 	}
 	
@@ -110,8 +104,8 @@ public class ServerTrackerCabinetSwingApplication {
 	 */
 	public String getNextId() {
 		int searchLocation;
-		if (cabinets.size() > 0) {
-			searchLocation = cabinets.size()-1;
+		if (getCabinets().size() > 0) {
+			searchLocation = getCabinets().size()-1;
 		} else {
 			searchLocation = 0;
 		}
@@ -133,7 +127,7 @@ public class ServerTrackerCabinetSwingApplication {
 	 * @return
 	 */
 	public String findId(String id) {
-		for (Cabinet cabinet : cabinets) {
+		for (Cabinet cabinet : getCabinets()) {
 			for (Server server : cabinet.getServersArray()) {
 				if (server.getId().contentEquals(id)) {
 					return id;
@@ -181,10 +175,10 @@ public class ServerTrackerCabinetSwingApplication {
 	private void refreshTable() {
 		// swingTeacherModel = new SwingTeacherModel();
 		Object[][] data = null;
-		data = new Object[countServers(cabinets)][5];
+		data = new Object[countServers(getCabinets())][5];
 		int i = 0;
 		
-		for (Cabinet cabinet : cabinets) {
+		for (Cabinet cabinet : getCabinets()) {
 			ArrayList<Server> currentCabinet = cabinet.getServersArray();
 			for (Server server : currentCabinet) {
 				data[i][0] = server.getId();
@@ -304,5 +298,13 @@ public class ServerTrackerCabinetSwingApplication {
 		idTextField.setBounds(159, 285, 325, 20);
 		frame.getContentPane().add(idTextField);
 		idTextField.setColumns(10);
+	}
+
+	public static List<Cabinet> getCabinets() {
+		return cabinets;
+	}
+
+	public static void setCabinets(List<Cabinet> cabinets) {
+		ServerTrackerCabinetSwingApplication.cabinets = cabinets;
 	}
 }

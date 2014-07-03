@@ -3,14 +3,12 @@
  */
 package ca.bcit.comp2613.a00251471.util;
 
-import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.List;
 
-import ca.bcit.comp2613.a00251471.util.*;
 import ca.bcit.comp2613.servertracker.model.*;
 
 /**

@@ -22,15 +22,8 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-//File I/O
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-
 import ca.bcit.comp2613.servertracker.model.*;
 
-import java.util.Random;
 import java.util.List;
 
 
@@ -55,7 +48,7 @@ public class Helper {
 	// http://en.wikipedia.org/wiki/List_of_vodkas + cat test2 | awk '{print $1}' | grep -v \\. | grep -vi the | sort | uniq | sed ':a;N;$!ba;s/\n/ /g'
 	public static String VODKALIST = "42 Absolut Absolwent Adnams Alberta AnestasiA Artic Belaya Belvedere Blavod Bols Bombora Bong Boru Bowman's Boyd Brand Cape Chase Chinggis Chopin Cirrus Ck Clique Cooranbong Cracovia Cï¿½roc Crystal Danzka Deep DOT Double Dovgan Downunder Dragon Dubra Eristoff Explorer Finlandia Firefly Fleischmann's Frï¿½s Glen's Gold Grand Grey Han Hangar Hooghoudt Hrenovuha Iceberg Isensua Jean-Marc Karlsson's Kauffman Keglevich Ketel Khortytsa Kihnu Kissui Kleiner Korski Koskenkorva Krupnik Kryshtal Kubanskaya Latvijas L'Chaim Leopold Level Lokka Lotus Luksusowa Magic Minskaya Monopolowa Monte Moskovskaya Murree Narodnaya Nemiroff Nikolai (originally Orloff Oso Pinky Pinnacle Platinka Polar Polonaise Popov Potato Putinka Pyatizvyozdnaya Rachmaninoff Rain Renat Reyka Rodnik Rokk Ruskova Russian SAVVY Schramm Shustov Siwucha SKYY Smirnoff Snow Sobieski Soplica Soyuz-Viktan Spendrups Square Starka Stolichnaya Stolnaya Stumbras Svedka Taaka Three Tito's Ultimat U'Luvka Ursus UV V44 Van Vikingfjord Villa Viru VKA Vladivar Vodka Vox White Wisent Wyborowa Xan Xellent Youri Zaranoff Zodiac";
 	// http://en.wikipedia.org/wiki/List_of_beer_styles + cat test3 | awk '{print $1}' | grep -v \\. | grep -vi the | sort | uniq | sed ':a;N;$!ba;s/\n/ /g'
-	public static String BEERLIST = "Altbier Amber American Barley Berliner Bière Bitter Blonde Bock Bohemian Brown California Classic Cream Doppelbock Dortmunder Düsseldorf Dunkel Dunkelweizen Eisbock Fruit Golden Gose Gueuze Hefeweizen Helles Imperial India Kölsch Lambic Light Maibock/Helles Malt Mild Oktoberfestbier/Märzenbier Old Oud Pale Pilsener/Pilsner/Pils Porter Red Roggenbier Saison Schwarzbier Scotch Steam Stout Term Vienna Weissbier Weizenbock Witbier";
+	public static String BEERLIST = "Altbier Amber American Barley Berliner Biï¿½re Bitter Blonde Bock Bohemian Brown California Classic Cream Doppelbock Dortmunder Dï¿½sseldorf Dunkel Dunkelweizen Eisbock Fruit Golden Gose Gueuze Hefeweizen Helles Imperial India Kï¿½lsch Lambic Light Maibock/Helles Malt Mild Oktoberfestbier/Mï¿½rzenbier Old Oud Pale Pilsener/Pilsner/Pils Porter Red Roggenbier Saison Schwarzbier Scotch Steam Stout Term Vienna Weissbier Weizenbock Witbier";
 	/**
 	 * Create max number of servers
 	 */
