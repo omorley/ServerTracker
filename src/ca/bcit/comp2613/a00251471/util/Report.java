@@ -6,19 +6,12 @@ package ca.bcit.comp2613.a00251471.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Random;
-import java.util.List;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.io.FileUtils;
 
-import ca.bcit.comp2613.a00251471.util.Helper;
-import ca.bcit.comp2613.a00251471.util.FillCabinetsException;
-import ca.bcit.comp2613.servertracker.model.Cabinet;
 import ca.bcit.comp2613.servertracker.model.Server;
 
 public class Report {

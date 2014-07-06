@@ -3,11 +3,8 @@ package ca.bcit.comp2613.a00251471.wow;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
-
-import org.apache.log4j.Logger;
 
 /**
  * 
