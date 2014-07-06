@@ -3,6 +3,7 @@ package ca.bcit.comp2613.servertracker.model;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Iterator;
 //import java.util.UUID;
 
 
@@ -73,11 +74,26 @@ public class ServerTrackerCabinetSwingApplication {
 		String id = idTextField.getText();
 		String serverName = serverNameTextField.getText();
 		String serverIP = serverIPTextField.getText();
-		Cabinet serverCabinet = Helper.findFirstCabinetExactName(getCabinets(), cabinetTextField.getText());
-		PowerCCT powerCircuit = Helper.findFirstPowerCCTExactName(getCabinets(), powerCCTTextField.getText());
-		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
+		PowerCCT powerCircuit;
+		Cabinet serverCabinet;
+		if (Helper.findFirstPowerCCTExactName(getCabinets(), powerCCTTextField.getText()) != null) {
+			powerCircuit = Helper.findFirstPowerCCTExactName(getCabinets(), powerCCTTextField.getText());
+		} else {
+			powerCircuit = new PowerCCT();
+			powerCircuit.setName(powerCCTTextField.getText());
+		}
+		if (Helper.findFirstCabinetExactName(getCabinets(), cabinetTextField.getText()) != null) {
+			serverCabinet = Helper.findFirstCabinetExactName(getCabinets(), cabinetTextField.getText());
+		} else {
+			serverCabinet = new Cabinet();
+			serverCabinet.setId(getNextCabinetId());
+			serverCabinet.addPowerCCT(powerCircuit);
+			serverCabinet.setName(cabinetTextField.getText());
+		}
+//		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
 		Server server = new Server(id, serverName, serverIP, powerCircuit);
 		Helper.save(getCabinets(), serverCabinet, server);
+		doCleanCabinets();
 		table.clearSelection();
 		refreshTable();
 		}
@@ -86,6 +102,7 @@ public class ServerTrackerCabinetSwingApplication {
 		String id = idTextField.getText();
 		Server server = new Server(id, null, null);
 		Helper.delete(getCabinets(), server);
+		table.clearSelection();
 		refreshTable();
 	}
 	
@@ -96,6 +113,19 @@ public class ServerTrackerCabinetSwingApplication {
 		serverIPTextField.setText("");
 		cabinetTextField.setText("");
 		powerCCTTextField.setText("");
+	}
+	
+	/**
+	 * Clear out empty cabinets
+	 */
+	public void doCleanCabinets() {
+		Iterator<Cabinet> iter = getCabinets().iterator();
+		while (iter.hasNext()) {
+			Cabinet cabinetLoop = iter.next();
+			if (cabinetLoop.getServersArray().size() < 1) {
+				iter.remove();
+			}
+		}
 	}
 	
 	/**
@@ -133,14 +163,49 @@ public class ServerTrackerCabinetSwingApplication {
 					return id;
 				}
 			}
-			
+		}
+
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return next available cabinet ID based on highest in use
+	 */
+	public String getNextCabinetId() {
+		int searchLocation;
+		if (getCabinets().size() > 0) {
+			searchLocation = getCabinets().size()-1;
+		} else {
+			searchLocation = 0;
+		}
+		
+		boolean foundId = false;
+		while (! foundId) {
+			searchLocation++;
+			if (findId(String.valueOf(searchLocation)) == null) {
+				foundId = true;
+			}
+		}
+		return String.valueOf(searchLocation);
+	}
+
+	/**
+	 * Search for a specific ID in the cabinet's list
+	 * @param id
+	 * @return
+	 */
+	public String findCabinetId(String id) {
+		for (Cabinet cabinet : getCabinets()) {
+			if (cabinet.getId().contentEquals(id)) {
+				return id;
+			}
 		}
 
 		return null;
 	}
 	
 	private void initTable() {
-
 		// table = new JTable(swingTeacherModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(

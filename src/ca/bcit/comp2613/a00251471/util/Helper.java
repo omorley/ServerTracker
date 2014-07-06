@@ -342,13 +342,25 @@ public class Helper {
 	 */
 	public static void save(List<Cabinet> cabinets, Cabinet newCabinet, Server server) {
 		boolean foundUpdate = false;
+		if (! cabinets.contains(newCabinet)) {
+			cabinets.add(newCabinet);
+		}
 		for (Cabinet cabinet : cabinets) {
-			for (Server serverloop: cabinet.getServersArray()) {
-				if (serverloop.getId().equals(server.getId())) {
-					serverloop.setName(server.getName());
-					serverloop.setIp(server.getIp());
-					foundUpdate = true;
-					break;
+			Iterator<Server> iter = cabinet.getServersArray().iterator();
+			while (iter.hasNext()) {
+				Server serverLoop = iter.next();
+				if (serverLoop.getId().equals(server.getId())) {
+					if (cabinet == newCabinet) {
+						serverLoop.setName(server.getName());
+						serverLoop.setIp(server.getIp());
+						serverLoop.setPowerCCT(server.getPowerCCT());
+						foundUpdate = true;
+						break;
+					} else {
+						iter.remove();
+						newCabinet.addServer(server);
+					}
+					
 				}
 			}
 		}
