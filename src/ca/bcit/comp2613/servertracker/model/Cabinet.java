@@ -4,10 +4,15 @@
 package ca.bcit.comp2613.servertracker.model;
 import java.util.ArrayList;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * @author Owen
  *
  */
+
+@Entity
 public class Cabinet {
 	// Name of cabinet
 	private String name;
@@ -16,7 +21,8 @@ public class Cabinet {
 	// Power ccts installed in cabinet
 	//private PowerCCT powerCircuits;
 	private ArrayList<PowerCCT> powerCircuits;
-	// String id because I'm told to have it
+	// String id because I'm told to have it - yup -> Henry ;)
+	@Id
 	private String id;
 	// Arraylist of servers
 	private ArrayList<Server> servers;

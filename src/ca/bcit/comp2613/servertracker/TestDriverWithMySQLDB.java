@@ -1,4 +1,4 @@
-package ca.bcit.comp2613.a00251471.util;
+package ca.bcit.comp2613.servertracker;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +12,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ImportResource;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
