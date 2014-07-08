@@ -7,6 +7,7 @@ import java.util.List;
 
 import ca.bcit.comp2613.servertracker.model.*;
 import ca.bcit.comp2613.servertracker.repository.*;
+import ca.bcit.comp2613.a00251471.util.*;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -25,10 +26,9 @@ public class TestDriverWithMySQLDB {
 		// TODO Auto-generated method stub
 		CabinetRepository cabinetRepository = context.getBean(CabinetRepository.class);
 		
-		Cabinet cabinet = new Cabinet();
-		cabinet.setId("1");
-		cabinet.setName("test");
-		cabinetRepository.save(cabinet);
+		ArrayList<Cabinet> cabinetList = Helper.createCabinets();
+
+		cabinetRepository.save(cabinetList);
 		
 		context.close();
 	}
