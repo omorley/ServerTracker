@@ -39,7 +39,8 @@ public class Helper {
 	public static Logger log = Logger.getLogger(Helper.class);
 	static {
 		PropertyConfigurator.configure(
-			Helper.class.getResourceAsStream("log4j.properties")
+			//Helper.class.getResourceAsStream("log4j.properties")
+				"log4j.properties"
 			);
 	}
 
