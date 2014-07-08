@@ -20,16 +20,35 @@ import org.apache.log4j.PropertyConfigurator;
 @ImportResource("application.xml")
 
 public class TestDriverWithMySQLDB {
+	public static String VODKALIST = "42 Absolut Absolwent Adnams Alberta AnestasiA Artic Belaya Belvedere Blavod Bols Bombora Bong Boru Bowman's Boyd Brand Cape Chase Chinggis Chopin Cirrus Ck Clique Cooranbong Cracovia C�roc Crystal Danzka Deep DOT Double Dovgan Downunder Dragon Dubra Eristoff Explorer Finlandia Firefly Fleischmann's Fr�s Glen's Gold Grand Grey Han Hangar Hooghoudt Hrenovuha Iceberg Isensua Jean-Marc Karlsson's Kauffman Keglevich Ketel Khortytsa Kihnu Kissui Kleiner Korski Koskenkorva Krupnik Kryshtal Kubanskaya Latvijas L'Chaim Leopold Level Lokka Lotus Luksusowa Magic Minskaya Monopolowa Monte Moskovskaya Murree Narodnaya Nemiroff Nikolai (originally Orloff Oso Pinky Pinnacle Platinka Polar Polonaise Popov Potato Putinka Pyatizvyozdnaya Rachmaninoff Rain Renat Reyka Rodnik Rokk Ruskova Russian SAVVY Schramm Shustov Siwucha SKYY Smirnoff Snow Sobieski Soplica Soyuz-Viktan Spendrups Square Starka Stolichnaya Stolnaya Stumbras Svedka Taaka Three Tito's Ultimat U'Luvka Ursus UV V44 Van Vikingfjord Villa Viru VKA Vladivar Vodka Vox White Wisent Wyborowa Xan Xellent Youri Zaranoff Zodiac";
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(TestDriverWithMySQLDB.class); 
-		// TODO Auto-generated method stub
-		CabinetRepository cabinetRepository = context.getBean(CabinetRepository.class);
-		
-		ArrayList<Cabinet> cabinetList = Helper.createCabinets();
 
-		cabinetRepository.save(cabinetList);
+		CabinetRepository cabinetRepository = context.getBean(CabinetRepository.class);
+
+		// Ghetto method, for the assignment only
+		String[] nameList = VODKALIST.split("\\s");
+		int maxCount = nameList.length;
+		for (int i = 0; i < maxCount; i++) {
+			Cabinet cabinet = new Cabinet();
+			cabinet.setId(Integer.toString(i));
+			cabinet.setName(nameList[i]);
+			cabinetRepository.save(cabinet);
+		}
 		
+		// Ideal method, to really go full speed on putting these in the database
+//		ArrayList<Cabinet> cabinetList = Helper.createCabinets();
+//		for (Cabinet cabinet:cabinetList) {
+//			cabinetRepository.save(cabinet);
+//		}
+		
+		// Testing for bare functionality.
+//		Cabinet cabinet = new Cabinet();
+//		cabinet.setId("1");
+//		cabinet.setName("test");
+//		cabinetRepository.save(cabinet);
+
 		context.close();
 	}
 
