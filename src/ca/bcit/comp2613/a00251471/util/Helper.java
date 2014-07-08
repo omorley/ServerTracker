@@ -38,10 +38,10 @@ public class Helper {
 	
 	public static Logger log = Logger.getLogger(Helper.class);
 	static {
-		PropertyConfigurator.configure(
-			//Helper.class.getResourceAsStream("log4j.properties")
-				"log4j.properties"
-			);
+//		PropertyConfigurator.configure(
+//			//Helper.class.getResourceAsStream("log4j.properties")
+//				"log4j.properties"
+//			);
 	}
 
 	// http://www.wines.com/pronunciation-wine-names.html + grep \( test | sed 's/\(.*\) (.*/\1/' | awk '{print $1}' | grep -v \\. | grep -vE ^A$ | grep -v The | sort | uniq | sed ':a;N;$!ba;s/\n/ /g'
