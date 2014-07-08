@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.Random;
 import java.util.List;
 
+import javax.persistence.EntityManagerFactory;
+
 import ca.bcit.comp2613.servertracker.model.*;
 import ca.bcit.comp2613.servertracker.repository.*;
 import ca.bcit.comp2613.a00251471.util.*;
@@ -27,28 +29,44 @@ public class TestDriverWithMySQLDB {
 
 		CabinetRepository cabinetRepository = context.getBean(CabinetRepository.class);
 
-//		// Ghetto method, for the assignment only
-//		String[] nameList = VODKALIST.split("\\s");
-//		int maxCount = nameList.length;
-//		for (int i = 0; i < maxCount; i++) {
-//			Cabinet cabinet = new Cabinet();
-//			cabinet.setId(Integer.toString(i));
-//			cabinet.setName(nameList[i]);
-//			cabinetRepository.save(cabinet);
-//		}
-		
-		// Ideal method, to really go full speed on putting these in the database
-		ArrayList<Cabinet> cabinetList = Helper.createCabinets();
-		for (Cabinet cabinet:cabinetList) {
-			System.out.println("Name: " + cabinet.getName());
+////		// Ghetto method, for the assignment only
+		String[] nameList = VODKALIST.split("\\s");
+		int maxCount = 100; //nameList.length;
+		for (int i = 0; i < maxCount; i++) {
+			Cabinet cabinet = new Cabinet();
+			cabinet.setId(Integer.toString(i));
+			cabinet.setName(nameList[i]);
 			cabinetRepository.save(cabinet);
 		}
+		
+//		// Ideal method, to really go full speed on putting these in the database
+//		ArrayList<Cabinet> cabinetList = Helper.createCabinets();
+//		for (Cabinet cabinet:cabinetList) {
+//			System.out.println("Name: " + cabinet.getName());
+//			cabinetRepository.save(cabinet);
+//		}
 		
 		// Testing for bare functionality.
 //		Cabinet cabinet = new Cabinet();
 //		cabinet.setId("1");
 //		cabinet.setName("test");
 //		cabinetRepository.save(cabinet);
+		EntityManagerFactory emf = (EntityManagerFactory) context.getBean("entityManagerFactory");
+		CustomQueryHelper customQueryHelper = new CustomQueryHelper(emf);
+		Cabinet test1 = customQueryHelper.getCabinetWithId("1");
+		System.out.println("Name: " + test1.getName());
+
+		Cabinet test2 = customQueryHelper.getCabinetWithId("2");
+		System.out.println("Name: " + test2.getName());
+
+		Cabinet test3 = customQueryHelper.getCabinetWithId("15");
+		System.out.println("Name: " + test3.getName());
+
+		Cabinet test5 = customQueryHelper.getCabinetWithId("30");
+		System.out.println("Name: " + test5.getName());
+
+		Cabinet test6 = customQueryHelper.getCabinetWithId("99");
+		System.out.println("Name: " + test6.getName());
 
 		context.close();
 	}
