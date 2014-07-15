@@ -4,8 +4,13 @@
 package ca.bcit.comp2613.servertracker.model;
 import java.util.ArrayList;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 /**
  * @author Owen
@@ -26,6 +31,10 @@ public class Cabinet {
 	private String id;
 	// Arraylist of servers
 	private ArrayList<Server> servers;
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(name = "cabinet_power",
+	joinColumns = { @JoinColumn(name = "cabinet_id") }, inverseJoinColumns = { @JoinColumn(name = "powercct_id") })
+	
 
 	public static void main(String[] args) {
 		

@@ -29,22 +29,27 @@ public class TestDriverWithMySQLDB {
 
 		CabinetRepository cabinetRepository = context.getBean(CabinetRepository.class);
 
-////		// Ghetto method, for the assignment only
-		String[] nameList = VODKALIST.split("\\s");
-		int maxCount = 100; //nameList.length;
-		for (int i = 0; i < maxCount; i++) {
-			Cabinet cabinet = new Cabinet();
-			cabinet.setId(Integer.toString(i));
-			cabinet.setName(nameList[i]);
-			cabinetRepository.save(cabinet);
-		}
+		PowerCCTRepository powerCCTRepository = context.getBean(PowerCCTRepository.class);
 		
-//		// Ideal method, to really go full speed on putting these in the database
-//		ArrayList<Cabinet> cabinetList = Helper.createCabinets();
-//		for (Cabinet cabinet:cabinetList) {
-//			System.out.println("Name: " + cabinet.getName());
+////		// Ghetto method, for the assignment only
+//		String[] nameList = VODKALIST.split("\\s");
+//		int maxCount = 100; //nameList.length;
+//		for (int i = 0; i < maxCount; i++) {
+//			Cabinet cabinet = new Cabinet();
+//			cabinet.setId(Integer.toString(i));
+//			cabinet.setName(nameList[i]);
 //			cabinetRepository.save(cabinet);
 //		}
+		
+//		// Ideal method, to really go full speed on putting these in the database
+		ArrayList<Cabinet> cabinetList = Helper.createCabinets();
+		for (Cabinet cabinet:cabinetList) {
+			System.out.println("Name: " + cabinet.getName());
+			for (PowerCCT powercct:cabinet.getPowerCCTArray()) {
+				powerCCTRepository.save(powercct);
+			}
+			cabinetRepository.save(cabinet);
+		}
 		
 		// Testing for bare functionality.
 //		Cabinet cabinet = new Cabinet();

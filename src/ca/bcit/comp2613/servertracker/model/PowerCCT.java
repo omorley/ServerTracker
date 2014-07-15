@@ -3,10 +3,21 @@
  */
 package ca.bcit.comp2613.servertracker.model;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
+import java.util.UUID;
+
 /**
  * @author Owen
  *
  */
+
+@Entity
 public class PowerCCT {
 	// Name of cct
 	private String name;
@@ -15,8 +26,13 @@ public class PowerCCT {
 	// Rating of cct
 	private int amperage;
 	// String id because I'm told to have it
+	@Id
 	private String id;
-
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(name = "cabinet_power",
+	joinColumns = { @JoinColumn(name = "powercct_id") }, inverseJoinColumns = { @JoinColumn(name = "cabinet_id") })
+	
+	
 	public static void main(String[] args) {
 		
 	}
@@ -25,6 +41,7 @@ public class PowerCCT {
 	 */
 	public PowerCCT() {
 		super();
+		setId(UUID.randomUUID().toString());
 	}
 	/**
 	 * @param name
@@ -32,6 +49,7 @@ public class PowerCCT {
 	public PowerCCT(String name) {
 		super();
 		setName(name);
+		setId(UUID.randomUUID().toString());
 	}
 	/**
 	 * @return the name
