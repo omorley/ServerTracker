@@ -3,6 +3,7 @@
  */
 package ca.bcit.comp2613.servertracker.model;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 /**
@@ -25,16 +27,16 @@ public class Cabinet {
 	private String facility;
 	// Power ccts installed in cabinet
 	//private PowerCCT powerCircuits;
-	private ArrayList<PowerCCT> powerCircuits;
+	
+	
 	// String id because I'm told to have it - yup -> Henry ;)
 	@Id
 	private String id;
 	// Arraylist of servers
+	@Transient
 	private ArrayList<Server> servers;
-	@ManyToMany(cascade=CascadeType.ALL)
-	@JoinTable(name = "cabinet_power",
-	joinColumns = { @JoinColumn(name = "cabinet_id") }, inverseJoinColumns = { @JoinColumn(name = "powercct_id") })
-	
+	@OneToMany(cascade=CascadeType.ALL)
+	private List<PowerCCT> powerCircuits;
 
 	public static void main(String[] args) {
 		
@@ -164,7 +166,7 @@ public class Cabinet {
 	/**
 	 * @return ArrayList containing the power circuits
 	 */
-	public ArrayList<PowerCCT> getPowerCCTArray() {
+	public List<PowerCCT> getPowerCCTArray() {
 		return powerCircuits;
 	}
 

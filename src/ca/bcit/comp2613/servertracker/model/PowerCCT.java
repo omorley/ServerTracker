@@ -9,7 +9,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+
 import java.util.UUID;
 
 /**
@@ -28,11 +30,16 @@ public class PowerCCT {
 	// String id because I'm told to have it
 	@Id
 	private String id;
-	@ManyToMany(cascade=CascadeType.ALL)
-	@JoinTable(name = "cabinet_power",
-	joinColumns = { @JoinColumn(name = "powercct_id") }, inverseJoinColumns = { @JoinColumn(name = "cabinet_id") })
+	@ManyToOne
+	private Cabinet cabinet;
 	
 	
+	public Cabinet getCabinet() {
+		return cabinet;
+	}
+	public void setCabinet(Cabinet cabinet) {
+		this.cabinet = cabinet;
+	}
 	public static void main(String[] args) {
 		
 	}
