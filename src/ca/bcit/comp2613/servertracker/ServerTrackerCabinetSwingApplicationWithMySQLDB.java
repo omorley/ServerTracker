@@ -1,11 +1,15 @@
-package ca.bcit.comp2613.servertracker.model;
+package ca.bcit.comp2613.servertracker;
 
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Iterator;
 //import java.util.UUID;
+
+
+
 
 
 
@@ -20,11 +24,19 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+
 import java.util.ArrayList;
 
+import ca.bcit.comp2613.servertracker.model.Cabinet;
+import ca.bcit.comp2613.servertracker.model.PowerCCT;
 import ca.bcit.comp2613.servertracker.model.Server;
+import ca.bcit.comp2613.servertracker.model.SwingServerTrackerModel;
+import ca.bcit.comp2613.servertracker.repository.CabinetRepository;
+import ca.bcit.comp2613.servertracker.repository.PowerCCTRepository;
+import ca.bcit.comp2613.servertracker.repository.ServerRepository;
 import ca.bcit.comp2613.a00251471.util.Helper;
-import ca.bcit.comp2613.servertracker.TestDriverWithMySQLDB;
 
 public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	public JFrame frame;
@@ -47,22 +59,51 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					ServerTrackerCabinetSwingApplication window = new ServerTrackerCabinetSwingApplication();
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace(); 
-//				}
-//			}
-//		});
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ServerTrackerCabinetSwingApplicationWithMySQLDB window = new ServerTrackerCabinetSwingApplicationWithMySQLDB();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace(); 
+				}
+			}
+		});
 	}
 
+	public static <T> List<T> copyIterator(Iterator<T> iter) {
+	    List<T> copy = new ArrayList();
+	    while (iter.hasNext())
+	        copy.add(iter.next());
+	    return copy;
+	}
+
+	
 	/**
 	 * Create the application.
 	 */
-	public ServerTrackerCabinetSwingApplicationWithMySQLDB(ArrayList<Cabinet> cabinets) {
+	public ServerTrackerCabinetSwingApplicationWithMySQLDB() {
+		ConfigurableApplicationContext context = SpringApplication
+				.run(TestDriverWithMySQLDB.class);
+			CabinetRepository cabinetRepository = context
+				.getBean(CabinetRepository.class);
+			PowerCCTRepository powerCCTRepository = context
+				.getBean(PowerCCTRepository.class);
+			ServerRepository serverRepository = context
+				.getBean(ServerRepository.class);
+		
+//		ArrayList<Cabinet> cabinetList = Helper.fillCabinets(5,5);
+//		for (Cabinet cabinet : cabinetList) {
+//			System.out.println("Name: " + cabinet.getName());
+//			for (PowerCCT powercct : cabinet.getPowerCCTArray()) {
+//				powerCCTRepository.save(powercct);
+//			}
+//			for (Server server : cabinet.getServersArray()) {
+//				serverRepository.save(server);
+//			}
+//			cabinetRepository.save(cabinet);
+//		}
+		cabinets = copyIterator(cabinetRepository.findAll().iterator());
 		setCabinets(cabinets);
 		initialize();
 		initTable();

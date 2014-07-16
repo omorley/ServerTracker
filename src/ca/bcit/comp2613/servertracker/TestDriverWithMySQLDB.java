@@ -55,8 +55,8 @@ public class TestDriverWithMySQLDB {
 //		}
 		cabinets = copyIterator(cabinetRepository.findAll().iterator());
 
-		ServerTrackerCabinetSwingApplicationWithMySQLDB newWindow = new ServerTrackerCabinetSwingApplicationWithMySQLDB((ArrayList) cabinets);
-		newWindow.frame.setVisible(true);
+		//ServerTrackerCabinetSwingApplicationWithMySQLDB newWindow = new ServerTrackerCabinetSwingApplicationWithMySQLDB((ArrayList) cabinets);
+		//newWindow.frame.setVisible(true);
 
 //		context.close();
 
