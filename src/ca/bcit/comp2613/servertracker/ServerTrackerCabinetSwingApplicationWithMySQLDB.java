@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 
 
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -54,6 +55,10 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			"Server IP", "Cabinet", "PowerCCT" };
 	private JTextField idTextField;
 	private static List<Cabinet> cabinets;
+	private static ConfigurableApplicationContext context;
+	public static CabinetRepository cabinetRepository;
+	public static PowerCCTRepository powerCCTRepository;
+	public static ServerRepository serverRepository;
 
 	/**
 	 * Launch the application.
@@ -83,15 +88,16 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	 * Create the application.
 	 */
 	public ServerTrackerCabinetSwingApplicationWithMySQLDB() {
-		ConfigurableApplicationContext context = SpringApplication
+
+		context = SpringApplication
 				.run(TestDriverWithMySQLDB.class);
-			CabinetRepository cabinetRepository = context
+		cabinetRepository = context
 				.getBean(CabinetRepository.class);
-			PowerCCTRepository powerCCTRepository = context
+		powerCCTRepository = context
 				.getBean(PowerCCTRepository.class);
-			ServerRepository serverRepository = context
+		serverRepository = context
 				.getBean(ServerRepository.class);
-		
+
 //		ArrayList<Cabinet> cabinetList = Helper.fillCabinets(5,5);
 //		for (Cabinet cabinet : cabinetList) {
 //			System.out.println("Name: " + cabinet.getName());
@@ -132,7 +138,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 //		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
 		Server server = new Server(id, serverName, serverIP, powerCircuit);
 //		TestDriver.save(getCabinets(), serverCabinet, server);
-		TestDriverWithMySQLDB.save(getCabinets(), serverCabinet, server);
+		save(getCabinets(), serverCabinet, server);
 		doCleanCabinets();
 		table.clearSelection();
 		refreshTable();
@@ -415,5 +421,47 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 
 	public static void setCabinets(List<Cabinet> cabinets) {
 		ServerTrackerCabinetSwingApplicationWithMySQLDB.cabinets = cabinets;
+	}
+
+	/**
+	 * Update entry of a server, add entry as needed
+	 * @param servers
+	 * @param server
+	 */
+	public static void save(List<Cabinet> cabinets, Cabinet newCabinet, Server server) {
+		boolean foundUpdate = false;
+		if (! cabinets.contains(newCabinet)) {
+			cabinets.add(newCabinet);
+			try {
+				cabinetRepository.save(newCabinet);
+			} catch (Exception e) {
+				e.printStackTrace(); 
+			}
+		}
+		cabinets = copyIterator(cabinetRepository.findAll().iterator());
+
+		for (Cabinet cabinet : cabinets) {
+//			Iterator<Server> iter = cabinet.getServersArray().iterator();
+			Iterator<Server> iter = cabinet.getServersArray().iterator();
+			while (iter.hasNext()) {
+				Server serverLoop = iter.next();
+				if (serverLoop.getId().equals(server.getId())) {
+					if (cabinet == newCabinet) {
+						serverLoop.setName(server.getName());
+						serverLoop.setIp(server.getIp());
+						serverLoop.setPowerCCT(server.getPowerCCT());
+						foundUpdate = true;
+						break;
+					} else {
+						iter.remove();
+						newCabinet.addServer(server);
+					}
+					
+				}
+			}
+		}
+		if (!foundUpdate) { // do an insert
+			newCabinet.addServer(server);
+		}
 	}
 }
