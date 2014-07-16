@@ -269,8 +269,11 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
+		try {
 		frame = new JFrame();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		frame.setBounds(100, 100, 1202, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
