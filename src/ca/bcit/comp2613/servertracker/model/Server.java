@@ -3,10 +3,15 @@
  */
 package ca.bcit.comp2613.servertracker.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
 /**
  * @author Owen
  *
  */
+@Entity
 public class Server {
 	// Server's name
 	private String name;
@@ -28,12 +33,14 @@ public class Server {
 	private String serviceTag;
 	// Date of warranty expiration
 	private int warrantyExpiration;
+	// String id because I'm told to have it
+	@Id
+	private String id;
 //	// External storage assigned to server
 //	private ExternalStorage externalStorage;
 	// Power cct used for server
+	@ManyToOne
 	private PowerCCT powerCCT;
-	// String id because I'm told to have it
-	private String id;
 	
 	private ServerStatus serverStatus;
 	

@@ -35,6 +35,9 @@ public class TestDriverWithMySQLDB {
 			PowerCCTRepository powerCCTRepository = context
 					.getBean(PowerCCTRepository.class);
 
+			ServerRepository serverRepository = context
+					.getBean(ServerRepository.class);
+			
 			// // // Ghetto method, for the assignment only
 			// String[] nameList = VODKALIST.split("\\s");
 			// int maxCount = 100; //nameList.length;
@@ -47,11 +50,15 @@ public class TestDriverWithMySQLDB {
 
 			// // Ideal method, to really go full speed on putting these in the
 			// database
-			ArrayList<Cabinet> cabinetList = Helper.createCabinets();
+//			ArrayList<Cabinet> cabinetList = Helper.createCabinets();
+			ArrayList<Cabinet> cabinetList = Helper.fillCabinets(5,5);
 			for (Cabinet cabinet : cabinetList) {
 				System.out.println("Name: " + cabinet.getName());
 				for (PowerCCT powercct : cabinet.getPowerCCTArray()) {
 					powerCCTRepository.save(powercct);
+				}
+				for (Server server : cabinet.getServersArray()) {
+					serverRepository.save(server);
 				}
 				cabinetRepository.save(cabinet);
 			}
