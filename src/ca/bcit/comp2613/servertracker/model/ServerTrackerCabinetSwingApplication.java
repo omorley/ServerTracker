@@ -1,10 +1,13 @@
 package ca.bcit.comp2613.servertracker.model;
 
+
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Iterator;
 //import java.util.UUID;
+
 
 
 
@@ -19,8 +22,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import java.util.ArrayList;
+
 import ca.bcit.comp2613.servertracker.model.Server;
 import ca.bcit.comp2613.a00251471.util.Helper;
+import ca.bcit.comp2613.a00251471.util.TestDriver;
+import ca.bcit.comp2613.servertracker.TestDriverWithMySQLDB;
 
 public class ServerTrackerCabinetSwingApplication {
 	public JFrame frame;
@@ -92,7 +98,8 @@ public class ServerTrackerCabinetSwingApplication {
 		}
 //		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
 		Server server = new Server(id, serverName, serverIP, powerCircuit);
-		Helper.save(getCabinets(), serverCabinet, server);
+//		TestDriver.save(getCabinets(), serverCabinet, server);
+		TestDriverWithMySQLDB.save(getCabinets(), serverCabinet, server);
 		doCleanCabinets();
 		table.clearSelection();
 		refreshTable();
@@ -244,7 +251,7 @@ public class ServerTrackerCabinetSwingApplication {
 		int i = 0;
 		
 		for (Cabinet cabinet : getCabinets()) {
-			ArrayList<Server> currentCabinet = cabinet.getServersArray();
+			List<Server> currentCabinet = cabinet.getServersArray();
 			for (Server server : currentCabinet) {
 				data[i][0] = server.getId();
 				data[i][1] = server.getName();

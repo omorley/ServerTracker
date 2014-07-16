@@ -6,6 +6,7 @@ package ca.bcit.comp2613.a00251471.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.List;
 
@@ -182,5 +183,38 @@ public class TestDriver {
 		}
 	}
 
-
+	/**
+	 * Update entry of a server, add entry as needed
+	 * @param servers
+	 * @param server
+	 */
+	public static void save(List<Cabinet> cabinets, Cabinet newCabinet, Server server) {
+		boolean foundUpdate = false;
+		if (! cabinets.contains(newCabinet)) {
+			cabinets.add(newCabinet);
+		}
+		for (Cabinet cabinet : cabinets) {
+			Iterator<Server> iter = cabinet.getServersArray().iterator();
+			while (iter.hasNext()) {
+				Server serverLoop = iter.next();
+				if (serverLoop.getId().equals(server.getId())) {
+					if (cabinet == newCabinet) {
+						serverLoop.setName(server.getName());
+						serverLoop.setIp(server.getIp());
+						serverLoop.setPowerCCT(server.getPowerCCT());
+						foundUpdate = true;
+						break;
+					} else {
+						iter.remove();
+						newCabinet.addServer(server);
+					}
+					
+				}
+			}
+		}
+		if (!foundUpdate) { // do an insert
+			newCabinet.addServer(server);
+		}
+	}
+	
 }

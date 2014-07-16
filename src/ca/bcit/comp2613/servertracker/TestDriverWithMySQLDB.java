@@ -3,6 +3,7 @@ package ca.bcit.comp2613.servertracker;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.List;
 
@@ -38,19 +39,6 @@ public class TestDriverWithMySQLDB {
 			ServerRepository serverRepository = context
 					.getBean(ServerRepository.class);
 			
-			// // // Ghetto method, for the assignment only
-			// String[] nameList = VODKALIST.split("\\s");
-			// int maxCount = 100; //nameList.length;
-			// for (int i = 0; i < maxCount; i++) {
-			// Cabinet cabinet = new Cabinet();
-			// cabinet.setId(Integer.toString(i));
-			// cabinet.setName(nameList[i]);
-			// cabinetRepository.save(cabinet);
-			// }
-
-			// // Ideal method, to really go full speed on putting these in the
-			// database
-//			ArrayList<Cabinet> cabinetList = Helper.createCabinets();
 			ArrayList<Cabinet> cabinetList = Helper.fillCabinets(5,5);
 			for (Cabinet cabinet : cabinetList) {
 				System.out.println("Name: " + cabinet.getName());
@@ -92,4 +80,37 @@ public class TestDriverWithMySQLDB {
 			e.printStackTrace();
 		}
 	}
-}
+
+	/**
+	 * Update entry of a server, add entry as needed
+	 * @param servers
+	 * @param server
+	 */
+	public static void save(List<Cabinet> cabinets, Cabinet newCabinet, Server server) {
+		boolean foundUpdate = false;
+		if (! cabinets.contains(newCabinet)) {
+			cabinets.add(newCabinet);
+		}
+		for (Cabinet cabinet : cabinets) {
+			Iterator<Server> iter = cabinet.getServersArray().iterator();
+			while (iter.hasNext()) {
+				Server serverLoop = iter.next();
+				if (serverLoop.getId().equals(server.getId())) {
+					if (cabinet == newCabinet) {
+						serverLoop.setName(server.getName());
+						serverLoop.setIp(server.getIp());
+						serverLoop.setPowerCCT(server.getPowerCCT());
+						foundUpdate = true;
+						break;
+					} else {
+						iter.remove();
+						newCabinet.addServer(server);
+					}
+					
+				}
+			}
+		}
+		if (!foundUpdate) { // do an insert
+			newCabinet.addServer(server);
+		}
+	}}

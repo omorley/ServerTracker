@@ -33,8 +33,8 @@ public class Cabinet {
 	@Id
 	private String id;
 	// Arraylist of servers
-	@Transient
-	private ArrayList<Server> servers;
+	@OneToMany(cascade=CascadeType.ALL)
+	private List<Server> servers;
 	@OneToMany(cascade=CascadeType.ALL)
 	private List<PowerCCT> powerCircuits;
 
@@ -140,7 +140,7 @@ public class Cabinet {
 	/**
 	 * @return ArrayList containing the servers
 	 */
-	public ArrayList<Server> getServersArray() {
+	public List<Server> getServersArray() {
 		return servers;
 	}
 	
