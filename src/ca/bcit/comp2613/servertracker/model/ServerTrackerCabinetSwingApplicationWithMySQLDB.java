@@ -1,7 +1,6 @@
 package ca.bcit.comp2613.servertracker.model;
 
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -25,10 +24,9 @@ import java.util.ArrayList;
 
 import ca.bcit.comp2613.servertracker.model.Server;
 import ca.bcit.comp2613.a00251471.util.Helper;
-import ca.bcit.comp2613.a00251471.util.TestDriver;
 import ca.bcit.comp2613.servertracker.TestDriverWithMySQLDB;
 
-public class ServerTrackerCabinetSwingApplication {
+public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	public JFrame frame;
 	private JTable table;
 	private JTextField serverNameTextField;
@@ -55,7 +53,7 @@ public class ServerTrackerCabinetSwingApplication {
 //					ServerTrackerCabinetSwingApplication window = new ServerTrackerCabinetSwingApplication();
 //					window.frame.setVisible(true);
 //				} catch (Exception e) {
-//					e.printStackTrace();
+//					e.printStackTrace(); 
 //				}
 //			}
 //		});
@@ -64,13 +62,7 @@ public class ServerTrackerCabinetSwingApplication {
 	/**
 	 * Create the application.
 	 */
-	public ServerTrackerCabinetSwingApplication() {
-		setCabinets(Helper.createCabinets(100));
-		initialize();
-		initTable();
-	}
-
-	public ServerTrackerCabinetSwingApplication(ArrayList<Cabinet> cabinets) {
+	public ServerTrackerCabinetSwingApplicationWithMySQLDB(ArrayList<Cabinet> cabinets) {
 		setCabinets(cabinets);
 		initialize();
 		initTable();
@@ -98,7 +90,8 @@ public class ServerTrackerCabinetSwingApplication {
 		}
 //		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
 		Server server = new Server(id, serverName, serverIP, powerCircuit);
-		TestDriver.save(getCabinets(), serverCabinet, server);
+//		TestDriver.save(getCabinets(), serverCabinet, server);
+		TestDriverWithMySQLDB.save(getCabinets(), serverCabinet, server);
 		doCleanCabinets();
 		table.clearSelection();
 		refreshTable();
@@ -276,6 +269,7 @@ public class ServerTrackerCabinetSwingApplication {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1202, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -376,6 +370,6 @@ public class ServerTrackerCabinetSwingApplication {
 	}
 
 	public static void setCabinets(List<Cabinet> cabinets) {
-		ServerTrackerCabinetSwingApplication.cabinets = cabinets;
+		ServerTrackerCabinetSwingApplicationWithMySQLDB.cabinets = cabinets;
 	}
 }

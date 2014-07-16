@@ -23,8 +23,10 @@ public class TestDriver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ServerTrackerCabinetSwingApplication newWindow = new ServerTrackerCabinetSwingApplication(Helper.fillCabinets(25, 5));
-		newWindow.frame.setVisible(true);
+//		ServerTrackerCabinetSwingApplication newWindow = new ServerTrackerCabinetSwingApplication(Helper.fillCabinets(25, 5));
+//		newWindow.frame.setVisible(true);
+		
+		
 		//nameSearch();
 		//random100();
 //		try {
