@@ -98,17 +98,17 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		serverRepository = context
 				.getBean(ServerRepository.class);
 
-//		ArrayList<Cabinet> cabinetList = Helper.fillCabinets(5,5);
-//		for (Cabinet cabinet : cabinetList) {
-//			System.out.println("Name: " + cabinet.getName());
-//			for (PowerCCT powercct : cabinet.getPowerCCTArray()) {
-//				powerCCTRepository.save(powercct);
-//			}
-//			for (Server server : cabinet.getServersArray()) {
-//				serverRepository.save(server);
-//			}
-//			cabinetRepository.save(cabinet);
-//		}
+		ArrayList<Cabinet> cabinetList = Helper.fillCabinets(2,5);
+		for (Cabinet cabinet : cabinetList) {
+			System.out.println("Name: " + cabinet.getName());
+			for (PowerCCT powercct : cabinet.getPowerCCTArray()) {
+				powerCCTRepository.save(powercct);
+			}
+			for (Server server : cabinet.getServersArray()) {
+				serverRepository.save(server);
+			}
+			cabinetRepository.save(cabinet);
+		}
 		cabinets = copyIterator(cabinetRepository.findAll().iterator());
 		setCabinets(cabinets);
 		initialize();

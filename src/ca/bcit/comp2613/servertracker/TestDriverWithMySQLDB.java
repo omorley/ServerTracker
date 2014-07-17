@@ -1,5 +1,6 @@
 package ca.bcit.comp2613.servertracker;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,10 +9,12 @@ import java.util.Random;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 import ca.bcit.comp2613.servertracker.model.*;
 import ca.bcit.comp2613.servertracker.repository.*;
 import ca.bcit.comp2613.a00251471.util.*;
+import ca.bcit.comp2613.servertracker.H2Config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -31,11 +34,27 @@ public class TestDriverWithMySQLDB {
 	private static EntityManagerFactory emf = null;
 	private static CustomQueryHelper customQueryHelper;
 	public static List<Cabinet> cabinets;
-//	private ConfigurableApplicationContext context;
+	private static ConfigurableApplicationContext context;
+	public static boolean useInMemoryDB = true;
 	
 	public static void main(String[] args) {
-		ConfigurableApplicationContext context = SpringApplication
-				.run(TestDriverWithMySQLDB.class);
+//		ConfigurableApplicationContext context = null;
+		if (useInMemoryDB) {
+			context = SpringApplication.run(H2Config.class);
+			try {
+				org.h2.tools.Server.createWebServer(null).start();
+				DataSource dataSource = (DataSource) context
+						.getBean("dataSource");
+				// org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource =
+				// (org.apache.tomcat.jdbc.pool.DataSource) dataSource;
+				// int a = 5;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			context = SpringApplication.run(TestDriverWithMySQLDB.class);
+		}
 			CabinetRepository cabinetRepository = context
 				.getBean(CabinetRepository.class);
 			PowerCCTRepository powerCCTRepository = context
