@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 
 
-import javax.activation.DataSource;
+import javax.sql.DataSource;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -318,6 +318,12 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			server = new Server(id, serverName, serverIP, powerCircuit);
 //			serverRepository.save(server);
 		}
+		
+		// populate server from Swing UI
+		server.setName(serverName);
+		server.setIp(serverIP);
+		
+		
 		if (Helper.findFirstCabinetExactName(cabinets, cabinetTextField.getText()) != null) {
 			serverCabinet = Helper.findFirstCabinetExactName(cabinets, cabinetTextField.getText());
 		} else {
