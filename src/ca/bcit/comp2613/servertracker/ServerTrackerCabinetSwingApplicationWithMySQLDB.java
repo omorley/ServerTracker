@@ -4,6 +4,7 @@ package ca.bcit.comp2613.servertracker;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Iterator;
 //import java.util.UUID;
@@ -15,6 +16,11 @@ import java.util.Iterator;
 
 
 
+
+
+
+import javax.activation.DataSource;
+import javax.persistence.EntityManagerFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -37,6 +43,7 @@ import ca.bcit.comp2613.servertracker.model.SwingServerTrackerModel;
 import ca.bcit.comp2613.servertracker.repository.CabinetRepository;
 import ca.bcit.comp2613.servertracker.repository.PowerCCTRepository;
 import ca.bcit.comp2613.servertracker.repository.ServerRepository;
+import ca.bcit.comp2613.servertracker.repository.CustomQueryHelper;
 import ca.bcit.comp2613.a00251471.util.Helper;
 
 public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
@@ -55,10 +62,15 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			"Server IP", "Cabinet", "PowerCCT" };
 	private JTextField idTextField;
 	private static List<Cabinet> cabinets;
+	private static List<Server> servers;
+	private static List<PowerCCT> powerCCTs;
 	private static ConfigurableApplicationContext context;
 	public static CabinetRepository cabinetRepository;
 	public static PowerCCTRepository powerCCTRepository;
 	public static ServerRepository serverRepository;
+	private static EntityManagerFactory emf;
+	private static CustomQueryHelper customQueryHelper;
+	public static boolean useInMemoryDB = true;
 
 	/**
 	 * Launch the application.
@@ -89,16 +101,35 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	 */
 	public ServerTrackerCabinetSwingApplicationWithMySQLDB() {
 
-		context = SpringApplication
-				.run(TestDriverWithMySQLDB.class);
+		if (useInMemoryDB) {
+			context = SpringApplication.run(H2Config.class);
+			try {
+				org.h2.tools.Server.createWebServer(null).start();
+				DataSource dataSource = (DataSource) context
+						.getBean("dataSource");
+				// org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource =
+				// (org.apache.tomcat.jdbc.pool.DataSource) dataSource;
+				// int a = 5;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			context = SpringApplication.run(TestDriverWithMySQLDB.class);
+		}
+
 		cabinetRepository = context
 				.getBean(CabinetRepository.class);
 		powerCCTRepository = context
 				.getBean(PowerCCTRepository.class);
 		serverRepository = context
 				.getBean(ServerRepository.class);
+		
+		emf = (EntityManagerFactory) context.getBean("entityManagerFactory");
 
-		ArrayList<Cabinet> cabinetList = Helper.fillCabinets(2,5);
+		customQueryHelper = new CustomQueryHelper(emf);
+		
+		ArrayList<Cabinet> cabinetList = Helper.fillCabinets(2,2);
 		for (Cabinet cabinet : cabinetList) {
 			System.out.println("Name: " + cabinet.getName());
 			for (PowerCCT powercct : cabinet.getPowerCCTArray()) {
@@ -115,142 +146,6 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		initTable();
 	}
 
-	public void doSave() {
-		String id = idTextField.getText();
-		String serverName = serverNameTextField.getText();
-		String serverIP = serverIPTextField.getText();
-		PowerCCT powerCircuit;
-		Cabinet serverCabinet;
-		if (Helper.findFirstPowerCCTExactName(getCabinets(), powerCCTTextField.getText()) != null) {
-			powerCircuit = Helper.findFirstPowerCCTExactName(getCabinets(), powerCCTTextField.getText());
-		} else {
-			powerCircuit = new PowerCCT();
-			powerCircuit.setName(powerCCTTextField.getText());
-		}
-		if (Helper.findFirstCabinetExactName(getCabinets(), cabinetTextField.getText()) != null) {
-			serverCabinet = Helper.findFirstCabinetExactName(getCabinets(), cabinetTextField.getText());
-		} else {
-			serverCabinet = new Cabinet();
-			serverCabinet.setId(getNextCabinetId());
-			serverCabinet.addPowerCCT(powerCircuit);
-			serverCabinet.setName(cabinetTextField.getText());
-		}
-//		System.out.println("Cabinet is..." + serverCabinet.getName() + "New server..." + serverName);
-		Server server = new Server(id, serverName, serverIP, powerCircuit);
-//		TestDriver.save(getCabinets(), serverCabinet, server);
-		save(getCabinets(), serverCabinet, server);
-		doCleanCabinets();
-		table.clearSelection();
-		refreshTable();
-		}
-	
-	public void doDelete() {
-		String id = idTextField.getText();
-		Server server = new Server(id, null, null);
-		Helper.delete(getCabinets(), server);
-		table.clearSelection();
-		refreshTable();
-	}
-	
-	public void doNew() {
-		String id = getNextId();
-		idTextField.setText(id);
-		serverNameTextField.setText("");
-		serverIPTextField.setText("");
-		cabinetTextField.setText("");
-		powerCCTTextField.setText("");
-	}
-	
-	/**
-	 * Clear out empty cabinets
-	 */
-	public void doCleanCabinets() {
-		Iterator<Cabinet> iter = getCabinets().iterator();
-		while (iter.hasNext()) {
-			Cabinet cabinetLoop = iter.next();
-			if (cabinetLoop.getServersArray().size() < 1) {
-				iter.remove();
-			}
-		}
-	}
-	
-	/**
-	 * 
-	 * @return next available ID based on highest in use
-	 */
-	public String getNextId() {
-		int searchLocation;
-		if (getCabinets().size() > 0) {
-			searchLocation = getCabinets().size()-1;
-		} else {
-			searchLocation = 0;
-		}
-		
-		System.out.println("Test: " + searchLocation);
-		boolean foundId = false;
-		while (! foundId) {
-			searchLocation++;
-			if (findId(String.valueOf(searchLocation)) == null) {
-				foundId = true;
-			}
-		}
-		return String.valueOf(searchLocation);
-	}
-
-	/**
-	 * Search for a specific ID in the server's list
-	 * @param id
-	 * @return
-	 */
-	public String findId(String id) {
-		for (Cabinet cabinet : getCabinets()) {
-			for (Server server : cabinet.getServersArray()) {
-				if (server.getId().contentEquals(id)) {
-					return id;
-				}
-			}
-		}
-
-		return null;
-	}
-	
-	/**
-	 * 
-	 * @return next available cabinet ID based on highest in use
-	 */
-	public String getNextCabinetId() {
-		int searchLocation;
-		if (getCabinets().size() > 0) {
-			searchLocation = getCabinets().size()-1;
-		} else {
-			searchLocation = 0;
-		}
-		
-		boolean foundId = false;
-		while (! foundId) {
-			searchLocation++;
-			if (findId(String.valueOf(searchLocation)) == null) {
-				foundId = true;
-			}
-		}
-		return String.valueOf(searchLocation);
-	}
-
-	/**
-	 * Search for a specific ID in the cabinet's list
-	 * @param id
-	 * @return
-	 */
-	public String findCabinetId(String id) {
-		for (Cabinet cabinet : getCabinets()) {
-			if (cabinet.getId().contentEquals(id)) {
-				return id;
-			}
-		}
-
-		return null;
-	}
-	
 	private void initTable() {
 		// table = new JTable(swingTeacherModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -266,50 +161,6 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 				});
 		refreshTable();
 
-	}
-	
-	private void populateFields() {
-		try {
-			idTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 0).toString());
-			serverNameTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 1).toString());
-			serverIPTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 2).toString());
-			cabinetTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 3).toString());
-			powerCCTTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 4).toString());
-		} catch (Exception e) {}
-	}
-	
-	private void refreshTable() {
-		// swingTeacherModel = new SwingTeacherModel();
-		Object[][] data = null;
-		data = new Object[countServers(getCabinets())][5];
-		int i = 0;
-		
-		for (Cabinet cabinet : getCabinets()) {
-			List<Server> currentCabinet = cabinet.getServersArray();
-			for (Server server : currentCabinet) {
-				data[i][0] = server.getId();
-				data[i][1] = server.getName();
-				data[i][2] = server.getIp();
-				data[i][3] = cabinet.getName();
-				data[i][4] = server.getPowerCCT().getName();
-				i++;
-			}
-		}
-		swingServerTrackerModel.setDataVector(data, columnNames);
-		table.repaint();
-	}
-	
-	private int countServers(List<Cabinet> cabinets) {
-		int serverCount = 0;
-		for (Cabinet cabinet : cabinets) {
-			serverCount+= cabinet.getServersArray().size();
-		}
-		return serverCount;
 	}
 	
 	/**
@@ -416,52 +267,289 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	}
 
 	public static List<Cabinet> getCabinets() {
-		return cabinets;
+		return copyIterator(cabinetRepository.findAll().iterator());
+	}
+
+	public static List<Server> getServers() {
+		return copyIterator(serverRepository.findAll().iterator());
+	}
+
+	public static List<PowerCCT> getPowerCCTs() {
+		return copyIterator(powerCCTRepository.findAll().iterator());
 	}
 
 	public static void setCabinets(List<Cabinet> cabinets) {
 		ServerTrackerCabinetSwingApplicationWithMySQLDB.cabinets = cabinets;
 	}
 
+	public static void setServers(List<Server> servers) {
+		ServerTrackerCabinetSwingApplicationWithMySQLDB.servers = servers;
+	}
+
+	public static void setPowerCCTs(List<PowerCCT> powerCCTs) {
+		ServerTrackerCabinetSwingApplicationWithMySQLDB.powerCCTs = powerCCTs;
+	}
+
+	public static void refreshLocalLists() {
+		setPowerCCTs(getPowerCCTs());
+		setServers(getServers());
+		setCabinets(getCabinets());
+	}
+	
+	// Save the data to database
+	public void doSave() {
+		String id = idTextField.getText();
+		String serverName = serverNameTextField.getText();
+		String serverIP = serverIPTextField.getText();
+		PowerCCT powerCircuit;
+		Cabinet serverCabinet;
+		Server server;
+		if (Helper.findFirstPowerCCTExactName(cabinets, powerCCTTextField.getText()) != null) {
+			powerCircuit = Helper.findFirstPowerCCTExactName(cabinets, powerCCTTextField.getText());
+		} else {
+			powerCircuit = new PowerCCT();
+			powerCircuit.setName(powerCCTTextField.getText());
+			powerCCTs.add(powerCircuit);
+			powerCCTRepository.save(powerCircuit);
+		}
+		if (CustomQueryHelper.getServerWithId(id) != null) {
+			server = CustomQueryHelper.getServerWithId(id);
+		} else {
+			server = new Server(id, serverName, serverIP, powerCircuit);
+//			serverRepository.save(server);
+		}
+		if (Helper.findFirstCabinetExactName(cabinets, cabinetTextField.getText()) != null) {
+			serverCabinet = Helper.findFirstCabinetExactName(cabinets, cabinetTextField.getText());
+		} else {
+			serverCabinet = new Cabinet();
+			serverCabinet.setId(getNextCabinetId());
+			serverCabinet.addPowerCCT(powerCircuit);
+			serverCabinet.setName(cabinetTextField.getText());
+			serverCabinet.addServer(server);
+//			cabinetRepository.save(serverCabinet);
+		}
+		save(serverCabinet, server);
+		doCleanCabinets();
+		table.clearSelection();
+		refreshTable();
+	}
+	
+
 	/**
 	 * Update entry of a server, add entry as needed
 	 * @param servers
 	 * @param server
 	 */
-	public static void save(List<Cabinet> cabinets, Cabinet newCabinet, Server server) {
+	public static void save(Cabinet newCabinet, Server server) {
 		boolean foundUpdate = false;
 		if (! cabinets.contains(newCabinet)) {
+			servers.add(server);
+			serverRepository.save(server);
 			cabinets.add(newCabinet);
-			try {
+			cabinetRepository.save(newCabinet);
+		} else {
+			for (Cabinet cabinet : cabinets) {
+	//			Iterator<Server> iter = cabinet.getServersArray().iterator();
+				Iterator<Server> iter = cabinet.getServersArray().iterator();
+				while (iter.hasNext()) {
+					Server serverLoop = iter.next();
+					if (serverLoop.getId().equals(server.getId())) {
+						if (cabinet == newCabinet) {
+							serverLoop.setName(server.getName());
+							serverLoop.setIp(server.getIp());
+							serverLoop.setPowerCCT(server.getPowerCCT());
+							debugPrintServers();
+							serverRepository.save(serverLoop);
+							debugPrintServers();
+							foundUpdate = true;
+							break;
+						} else {
+							//updating local data
+							iter.remove();
+							newCabinet.addServer(server);
+							cabinet.removeServer(server);
+							//updating database
+							cabinets.add(newCabinet);
+							serverRepository.save(server);
+							cabinetRepository.save(cabinet);
+							cabinetRepository.save(newCabinet);
+						}
+					}
+				}
+			}
+			if (!foundUpdate) { // do an insert
+				newCabinet.addServer(server);
 				cabinetRepository.save(newCabinet);
-			} catch (Exception e) {
-				e.printStackTrace(); 
+				cabinets.add(newCabinet);
 			}
 		}
-		cabinets = copyIterator(cabinetRepository.findAll().iterator());
+	}
+	
+	public static void debugPrintServers() {
+		for (Cabinet cabinet: getCabinets()) {
+			System.out.println("Cabinet: " + cabinet.getName());
+			for (Server server: cabinet.getServersArray()) {
+				System.out.println("Server: " + server.getName() + " ID: " + server.getId());
+			}
+		}
+		for (Server server: getServers()) {
+			System.out.println("Server: " + server.getName() + " ID: " + server.getId());
+		}
+	}
+	
+	// Delete item from database
+	public void doDelete() {
+		String id = idTextField.getText();
+		Server server = new Server(id, null, null);
+		Helper.delete(getCabinets(), server);
+		serverRepository.delete(server.getId());
+		table.clearSelection();
+		refreshTable();
+	}
 
-		for (Cabinet cabinet : cabinets) {
-//			Iterator<Server> iter = cabinet.getServersArray().iterator();
-			Iterator<Server> iter = cabinet.getServersArray().iterator();
-			while (iter.hasNext()) {
-				Server serverLoop = iter.next();
-				if (serverLoop.getId().equals(server.getId())) {
-					if (cabinet == newCabinet) {
-						serverLoop.setName(server.getName());
-						serverLoop.setIp(server.getIp());
-						serverLoop.setPowerCCT(server.getPowerCCT());
-						foundUpdate = true;
-						break;
-					} else {
-						iter.remove();
-						newCabinet.addServer(server);
-					}
-					
+	// Clear text fields
+	public void doNew() {
+		String id = getNextId();
+		idTextField.setText(id);
+		serverNameTextField.setText("");
+		serverIPTextField.setText("");
+		cabinetTextField.setText("");
+		powerCCTTextField.setText("");
+	}
+	
+	/**
+	 * Clear out empty cabinets
+	 */
+	public void doCleanCabinets() {
+		Iterator<Cabinet> iter = getCabinets().iterator();
+		while (iter.hasNext()) {
+			Cabinet cabinetLoop = iter.next();
+			if (cabinetLoop.getServersArray().size() < 1) {
+				iter.remove();
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @return next available ID based on highest in use
+	 */
+	public String getNextId() {
+		int searchLocation;
+		if (getCabinets().size() > 0) {
+			searchLocation = getCabinets().size()-1;
+		} else {
+			searchLocation = 0;
+		}
+		
+		boolean foundId = false;
+		while (! foundId) {
+			searchLocation++;
+			if (findId(String.valueOf(searchLocation)) == null) {
+				foundId = true;
+			}
+		}
+		return String.valueOf(searchLocation);
+	}
+
+	/**
+	 * Search for a specific ID in the server's list
+	 * @param id
+	 * @return
+	 */
+	public String findId(String id) {
+		for (Cabinet cabinet : getCabinets()) {
+			for (Server server : cabinet.getServersArray()) {
+				if (server.getId().contentEquals(id)) {
+					return id;
 				}
 			}
 		}
-		if (!foundUpdate) { // do an insert
-			newCabinet.addServer(server);
-		}
+
+		return null;
 	}
+	
+	/**
+	 * 
+	 * @return next available cabinet ID based on highest in use
+	 */
+	public String getNextCabinetId() {
+		int searchLocation;
+		if (getCabinets().size() > 0) {
+			searchLocation = getCabinets().size()-1;
+		} else {
+			searchLocation = 0;
+		}
+		
+		boolean foundId = false;
+		while (! foundId) {
+			searchLocation++;
+			if (findId(String.valueOf(searchLocation)) == null) {
+				foundId = true;
+			}
+		}
+		return String.valueOf(searchLocation);
+	}
+
+	/**
+	 * Search for a specific ID in the cabinet's list
+	 * @param id
+	 * @return
+	 */
+	public String findCabinetId(String id) {
+		for (Cabinet cabinet : getCabinets()) {
+			if (cabinet.getId().contentEquals(id)) {
+				return id;
+			}
+		}
+
+		return null;
+	}
+	
+	private void populateFields() {
+		try {
+			idTextField.setText(table.getModel()
+					.getValueAt(table.getSelectedRow(), 0).toString());
+			serverNameTextField.setText(table.getModel()
+					.getValueAt(table.getSelectedRow(), 1).toString());
+			serverIPTextField.setText(table.getModel()
+					.getValueAt(table.getSelectedRow(), 2).toString());
+			cabinetTextField.setText(table.getModel()
+					.getValueAt(table.getSelectedRow(), 3).toString());
+			powerCCTTextField.setText(table.getModel()
+					.getValueAt(table.getSelectedRow(), 4).toString());
+		} catch (Exception e) {}
+	}
+	
+	private void refreshTable() {
+		refreshLocalLists();
+		// swingTeacherModel = new SwingTeacherModel();
+		Object[][] data = null;
+		data = new Object[countServers(cabinets)][5];
+		int i = 0;
+		
+		for (Cabinet cabinet : cabinets) {
+			List<Server> currentCabinet = cabinet.getServersArray();
+			for (Server server : currentCabinet) {
+				data[i][0] = server.getId();
+				data[i][1] = server.getName();
+				data[i][2] = server.getIp();
+				data[i][3] = cabinet.getName();
+				data[i][4] = server.getPowerCCT().getName();
+				i++;
+			}
+		}
+		swingServerTrackerModel.setDataVector(data, columnNames);
+		table.repaint();
+	}
+	
+	private int countServers(List<Cabinet> cabinets) {
+		int serverCount = 0;
+		for (Cabinet cabinet : cabinets) {
+			serverCount+= cabinet.getServersArray().size();
+		}
+		return serverCount;
+	}
+	
+
 }

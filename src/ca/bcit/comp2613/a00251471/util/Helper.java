@@ -18,6 +18,7 @@ import java.util.Random;
 
 
 
+
 //Log4j
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -223,6 +224,21 @@ public class Helper {
 	 * @param servers
 	 * @param serverName
 	 * @return
+	 */
+	public static Server findServerExactName(List<Server> servers,String serverName) {
+		for (Server server : servers) {
+			if (server.getName().equals(serverName)) {
+				return server;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Find server by exact name match
+	 * @param servers
+	 * @param serverName
+	 * @return-
 	 */
 	public static ArrayList<Server> findServerExactName(ArrayList<Server> servers,String serverName) {
 		ArrayList<Server> foundServers = new ArrayList<>();
