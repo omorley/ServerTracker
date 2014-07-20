@@ -110,9 +110,10 @@ public class PowerCCT {
 	 */
 	@Override
 	public String toString() {
-		return "PowerCCT [getName()=" + getName() + ", getUps()=" + getUps()
-				+ ", getAmperage()=" + getAmperage() + ", getId()=" + getId()
-				+ "]";
+		return getName();
+//		return "PowerCCT [getName()=" + getName() + ", getUps()=" + getUps()
+//				+ ", getAmperage()=" + getAmperage() + ", getId()=" + getId()
+//				+ "]";
 	}
 	
 

@@ -101,9 +101,10 @@ public class Cabinet {
 	 */
 	@Override
 	public String toString() {
-		return "Cabinet [getName()=" + getName() + ", getFacility()="
-				+ getFacility() + ", getPowerCircuits()=" + listPowerCCTs()
-				+ ", getId()=" + getId() + "]";
+		return getName();
+//		return "Cabinet [getName()=" + getName() + ", getFacility()="
+//				+ getFacility() + ", getPowerCircuits()=" + listPowerCCTs()
+//				+ ", getId()=" + getId() + "]";
 	}
 	/*
 	 * Method to add a Server to servers ArrayList
