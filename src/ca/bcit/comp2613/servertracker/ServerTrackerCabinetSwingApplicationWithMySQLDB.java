@@ -66,6 +66,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	private static CustomQueryHelper customQueryHelper;
 	public static boolean useInMemoryDB = true;
 	public static final String addNew = "..Add New..";
+	private boolean undoButton = false;
 
 	/**
 	 * Launch the application.
@@ -289,6 +290,12 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	}
 	
 	public void checkButtons() {
+		if (undoButton) {
+			btnSave.setText("Undo");
+//			undoButton = false;
+		} else {
+			btnSave.setText("Save");
+		}
 		System.out.println("Start....");
 		System.out.println("Table... " + table.getSelectedRow());
 		if (table.getSelectedRow() >= 0) {
@@ -357,16 +364,15 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	
 	// Save the data to database
 	public void doSave() {
+		undoButton = false;
 		String id = idTextField.getText();
 		String serverName = serverNameTextField.getText();
 		String serverIP = serverIPTextField.getText();
 		PowerCCT powerCircuit;
 		Cabinet serverCabinet;  
 		Server server;
-//		if (Helper.findFirstPowerCCTExactName(cabinets, powerCCTComboBox.getSelectedItem().toString()) != null) {
-//			powerCircuit = Helper.findFirstPowerCCTExactName(cabinets, powerCCTComboBox.getSelectedItem().toString());
 		if (powerCCTComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
-			powerCircuit = Helper.findFirstPowerCCTExactName(cabinets, powerCCTComboBox.getSelectedItem().toString());
+			powerCircuit = (PowerCCT) powerCCTComboBox.getSelectedItem();
 		} else {
 			powerCircuit = new PowerCCT();
 			powerCircuit.setName(powerCCTTextField.getText());
@@ -377,15 +383,10 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			server = CustomQueryHelper.getServerWithId(id);
 		} else {
 			server = new Server(id, serverName, serverIP, powerCircuit);
-//			serverRepository.save(server);
 		}
-		
-		// populate server from Swing UI
 		server.setName(serverName);
 		server.setIp(serverIP);
 		server.setPowerCCT(powerCircuit);
-//		if (Helper.findFirstCabinetExactName(cabinets, cabinetComboBox.getSelectedItem().toString()) != null) {
-//			serverCabinet = Helper.findFirstCabinetExactName(cabinets, cabinetComboBox.getSelectedItem().toString());
 		if (cabinetComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
 			serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
 		} else {
@@ -393,8 +394,6 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			serverCabinet.setId(getNextCabinetId());
 			serverCabinet.addPowerCCT(powerCircuit);
 			serverCabinet.setName(cabinetTextField.getText());
-//			serverCabinet.addServer(server);
-//			cabinetRepository.save(serverCabinet);
 		}
 		save(serverCabinet, server);
 		doCleanCabinets();
@@ -411,19 +410,15 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	 */
 	public static void save(Cabinet newCabinet, Server server) {
 		boolean foundUpdate = false;
-		if (! cabinets.contains(newCabinet)) {
-//			servers.add(server);
-//			serverRepository.save(server);
-			cabinets.add(newCabinet);
-			System.out.println("Cabinet Name: " + newCabinet);
-			System.out.println(" Power array: " + newCabinet.getPowerCCTArray());
-			System.out.println(" Servers array: " + newCabinet.getServersArray());
-			cabinetRepository.save(newCabinet);
-			debugPrintServers();
-		}
+//		if (! cabinets.contains(newCabinet)) {
+//			debugPrintServers();
+//			System.out.println("And new cabinet is... " + newCabinet);
+//			cabinets.add(newCabinet);
+//			cabinetRepository.save(newCabinet);
+//			debugPrintServers();
+//		}
 		outerloop:
 		for (Cabinet cabinet : cabinets) {
-//			Iterator<Server> iter = cabinet.getServersArray().iterator();
 			Iterator<Server> iter = cabinet.getServersArray().iterator();
 			while (iter.hasNext()) {
 				Server serverLoop = iter.next();
@@ -445,9 +440,6 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 						cabinets.add(newCabinet);
 						serverRepository.save(server);
 						cabinetRepository.save(cabinet);
-						System.out.println("Cabinet Name: " + newCabinet);
-						System.out.println(" Power array: " + newCabinet.getPowerCCTArray());
-						System.out.println(" Servers array: " + newCabinet.getServersArray());
 						cabinetRepository.save(newCabinet);
 						foundUpdate = true;
 						break outerloop;
@@ -455,7 +447,8 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 				}
 			}
 		}
-		if (!foundUpdate) { // do an insert
+		if (!foundUpdate) { 
+			// do an insert
 			newCabinet.addServer(server);
 			cabinets.add(newCabinet);
 			cabinetRepository.save(newCabinet);
@@ -482,12 +475,16 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	// Delete item from database
 	public void doDelete() {
 		String id = idTextField.getText();
-		Server server = Helper.findServerExactName(servers, serverNameTextField.getText());
-		Helper.delete(getCabinets(), server);
+		Server server = (Server) table.getModel().getValueAt(table.getSelectedRow(), 1);
+		Cabinet cabinet = (Cabinet) table.getModel().getValueAt(table.getSelectedRow(), 3);
+		cabinet.removeServer(server);
+//		Helper.delete(getCabinets(), server);
+		cabinetRepository.save(cabinet);
 		serverRepository.delete(server.getId());
 		table.clearSelection();
 		refreshTable();
 		btnDelete.setEnabled(false);
+		undoButton = true;
 	}
 
 	// Clear text fields
@@ -591,10 +588,9 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	
 	private void populateFields() {
 		try {
-			idTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 0).toString());
-			serverNameTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 1).toString());
+
+			idTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
+			serverNameTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
 			serverIPTextField.setText(table.getModel()
 					.getValueAt(table.getSelectedRow(), 2).toString());
 			cabinetComboBox.getModel().setSelectedItem(table.getModel().getValueAt(table.getSelectedRow(), 3));
@@ -615,7 +611,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			List<Server> currentCabinet = cabinet.getServersArray();
 			for (Server server : currentCabinet) {
 				data[i][0] = server.getId();
-				data[i][1] = server.getName();
+				data[i][1] = server;
 				data[i][2] = server.getIp();
 				data[i][3] = cabinet;
 				data[i][4] = server.getPowerCCT();
@@ -623,6 +619,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			}
 		}
 		swingServerTrackerModel.setDataVector(data, columnNames);
+		table.removeColumn(table.getColumnModel().getColumn(0));
 		table.repaint();
 		checkButtons();
 	}

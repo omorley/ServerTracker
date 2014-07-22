@@ -254,18 +254,19 @@ public class Server {
 	 */
 	@Override
 	public String toString() {
-		return "Server [getName()=" + getName() + ", getCabinet()="
-				//+ getCabinet() ???? 
-				+ ", getIp()=" + getIp() + ", getPurpose()="
-				+ getPurpose() + ", getOwner()=" + getOwner()
-				+ ", getProjectedPower()=" + getProjectedPower()
-				+ ", getProcessors()=" + getProcessors() + ", getCores()="
-				+ getCores() + ", getMemory()=" + getMemory()
-				+ ", getServiceTag()=" + getServiceTag()
-				+ ", getWarrantyExpiration()=" + getWarrantyExpiration()
-//				+ ", getExternalStorage()=" + getExternalStorage()
-				+ ", getPowerCCT()=" + getPowerCCT() + ", getId()=" + getId()
-				+ "]";
+		return getName();
+//		return "Server [getName()=" + getName() + ", getCabinet()="
+//				//+ getCabinet() ???? 
+//				+ ", getIp()=" + getIp() + ", getPurpose()="
+//				+ getPurpose() + ", getOwner()=" + getOwner()
+//				+ ", getProjectedPower()=" + getProjectedPower()
+//				+ ", getProcessors()=" + getProcessors() + ", getCores()="
+//				+ getCores() + ", getMemory()=" + getMemory()
+//				+ ", getServiceTag()=" + getServiceTag()
+//				+ ", getWarrantyExpiration()=" + getWarrantyExpiration()
+////				+ ", getExternalStorage()=" + getExternalStorage()
+//				+ ", getPowerCCT()=" + getPowerCCT() + ", getId()=" + getId()
+//				+ "]";
 	}
 
 
