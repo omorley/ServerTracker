@@ -14,14 +14,17 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,21 +42,48 @@ import ca.bcit.comp2613.servertracker.repository.ServerRepository;
 public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	public JFrame frame;
 	private JTable table;
-	private JTextField serverNameTextField;
-	private JTextField serverIPTextField;
-	private JTextField cabinetTextField;
+	private JTable powerTable;
+
 	private JComboBox cabinetComboBox;
 	private JComboBox powerCCTComboBox;
-	private JTextField powerCCTTextField;
+	private JComboBox cabinetModifyList;
+	private JComboBox powerCCTModifyList;
+
 	private JLabel lblServerIp;
 	private JLabel lblServerId;
 	private JLabel lblCabinetId;
 	private JLabel lblPowerCCTId;
+	private JLabel lblServerCPUCores;
+	private JLabel lblServerGigabytesMemory;
+	private JLabel lblServerServiceTag;
+	private JLabel lblServer;
+	private JLabel lblServerWarrantyExpiration;
+	private JLabel lblModifyCabinets;
+
+	private JTextField serverNameTextField;
+	private JTextField serverIPTextField;
+	private JTextField serverPurposeTextField;
+	private JTextField serverOwnerTextField;
+
+	private JFormattedTextField serverProjectedPowerTextField;
+	private JFormattedTextField serverCPUSocketsTextField;
+	private JFormattedTextField serverCPUCoresTextField;
+	private JFormattedTextField serverMemoryTextField;
+
+	private JTextField serverServiceTagTextField;
+	private JTextField serverWarrantyDateTextField;
+	private JTextField cabinetAddNewTextField;
+	private JTextField powerAddNewTextField;
+
 	private JButton btnDelete;
 	private JButton btnSave;
+	
+	private JPanel serverPanel;
+	private JPanel cabinetPanel;
+	private JPanel powerCCTPanel;
+	
 	private SwingServerTrackerModel swingServerTrackerModel;
-	public String[] columnNames = new String[] { "id", "Server Name",
-			"Server IP", "Cabinet", "PowerCCT" };
+	public String[] columnNames = new String[] { "id", "Name", "IP", "Purpose", "Owner", "Power Usage", "CPU Sockets", "CPU Cores", "Memory", "Service Tag", "Warranty Date", "Cabinet", "PowerCCT" };
 	private JTextField idTextField;
 	private static List<Cabinet> cabinets;
 	private static List<Server> servers;
@@ -161,7 +191,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	}
 	
 	/**
-	 * Initialize the contents of the frame.
+	 * 1 the contents of the frame.
 	 */
 	private void initialize() {
 		try {
@@ -169,7 +199,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		frame.setBounds(100, 100, 1202, 600);
+		frame.setBounds(100, 100, 1202, 877);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -188,34 +218,35 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		// scrollPane.add(table);
 		// frame.getContentPane().add(table);
 
-		JLabel lblServerName = new JLabel("Server Name");
-		lblServerName.setBounds(44, 330, 103, 14);
+		JLabel lblServerName = new JLabel("Name");
+		lblServerName.setBounds(44, 352, 103, 14);
 		frame.getContentPane().add(lblServerName);
 
 		serverNameTextField = new JTextField();
-		serverNameTextField.setBounds(159, 327, 325, 20);
+		serverNameTextField.setBounds(159, 349, 325, 20);
 		frame.getContentPane().add(serverNameTextField);
 		serverNameTextField.setColumns(10);
 
 		serverIPTextField = new JTextField();
-		serverIPTextField.setBounds(159, 371, 325, 20);
+		serverIPTextField.setBounds(159, 382, 325, 20);
 		frame.getContentPane().add(serverIPTextField);
 		serverIPTextField.setColumns(10);
 
-		lblServerIp = new JLabel("Server IP");
-		lblServerIp.setBounds(44, 374, 77, 14);
+		lblServerIp = new JLabel("IP");
+		lblServerIp.setBounds(44, 385, 77, 14);
 		frame.getContentPane().add(lblServerIp);
 
 		lblServerId = new JLabel("id");
-		lblServerId.setBounds(44, 288, 46, 14);
-		frame.getContentPane().add(lblServerId);
+		lblServerId.setEnabled(false);
+		lblServerId.setBounds(44, 277, 46, 14);
+		frame.getContentPane().add(lblServerId).setVisible(false);
 
 //		cabinetTextField = new JTextField();
 //		cabinetTextField.setBounds(159, 412, 325, 20);
 //		frame.getContentPane().add(cabinetTextField);
 //		cabinetTextField.setColumns(10);
 		cabinetComboBox = new JComboBox();
-		cabinetComboBox.setBounds(159, 412, 325, 20);
+		cabinetComboBox.setBounds(159, 703, 325, 20);
 		updateCabinetList();
 		frame.getContentPane().add(cabinetComboBox);
 
@@ -227,7 +258,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		});
 		
 		lblCabinetId = new JLabel("Cabinet");
-		lblCabinetId.setBounds(44, 412, 77, 14);
+		lblCabinetId.setBounds(44, 703, 77, 14);
 		frame.getContentPane().add(lblCabinetId);
 		
 //		powerCCTTextField = new JTextField();
@@ -235,7 +266,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 //		frame.getContentPane().add(powerCCTTextField);
 //		powerCCTTextField.setColumns(10);
 		powerCCTComboBox = new JComboBox();
-		powerCCTComboBox.setBounds(159, 459, 325, 20);
+		powerCCTComboBox.setBounds(159, 739, 325, 20);
 		updatePowerCCTList();
 		frame.getContentPane().add(powerCCTComboBox);
 		powerCCTComboBox.addActionListener(new ActionListener() {
@@ -246,7 +277,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 
 		
 		lblPowerCCTId = new JLabel("Power CCT");
-		lblPowerCCTId.setBounds(44, 459, 77, 14);
+		lblPowerCCTId.setBounds(44, 739, 120, 14);
 		frame.getContentPane().add(lblPowerCCTId);
 
 		btnSave = new JButton("Save");
@@ -258,17 +289,17 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		});
 		btnSave.setEnabled(false);
 		
-		btnSave.setBounds(44, 506, 89, 23);
+		btnSave.setBounds(395, 775, 89, 23);
 		frame.getContentPane().add(btnSave);
 
-		btnDelete = new JButton("Delete");
+		btnDelete = new JButton("Delete Selected");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				doDelete();
 				checkButtons();
 			}
 		});
-		btnDelete.setBounds(169, 506, 89, 23);
+		btnDelete.setBounds(1026, 274, 144, 23);
 		frame.getContentPane().add(btnDelete);
 		btnDelete.setEnabled(false);
 		
@@ -279,14 +310,162 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 				checkButtons();
 			}
 		});
-		btnNewButton.setBounds(496, 260, 89, 23);
+		btnNewButton.setBounds(44, 775, 89, 23);
 		frame.getContentPane().add(btnNewButton);
 
 		idTextField = new JTextField();
+		idTextField.setEnabled(false);
 		idTextField.setEditable(false);
-		idTextField.setBounds(159, 285, 325, 20);
-		frame.getContentPane().add(idTextField);
+		idTextField.setBounds(159, 274, 325, 20);
+		frame.getContentPane().add(idTextField).setVisible(false);
 		idTextField.setColumns(10);
+		
+		serverPurposeTextField = new JTextField();
+		serverPurposeTextField.setColumns(10);
+		serverPurposeTextField.setBounds(159, 418, 325, 20);
+		frame.getContentPane().add(serverPurposeTextField);
+		
+		JLabel lblServerPurpose = new JLabel("Purpose");
+		lblServerPurpose.setBounds(44, 421, 77, 14);
+		frame.getContentPane().add(lblServerPurpose);
+		
+		serverOwnerTextField = new JTextField();
+		serverOwnerTextField.setColumns(10);
+		serverOwnerTextField.setBounds(159, 454, 325, 20);
+		frame.getContentPane().add(serverOwnerTextField);
+
+		JLabel lblServerOwner = new JLabel("Owner");
+		lblServerOwner.setBounds(44, 457, 77, 14);
+		frame.getContentPane().add(lblServerOwner);
+		
+		serverProjectedPowerTextField = new JFormattedTextField();
+		serverProjectedPowerTextField.setValue(new Double(0.00));
+		serverProjectedPowerTextField.setColumns(10);
+		serverProjectedPowerTextField.setBounds(159, 490, 325, 20);
+		frame.getContentPane().add(serverProjectedPowerTextField);
+		
+		JLabel lblServerProjectedPower = new JLabel("Power Usage");
+		lblServerProjectedPower.setBounds(44, 493, 135, 17);
+		frame.getContentPane().add(lblServerProjectedPower);
+		
+		serverCPUSocketsTextField = new JFormattedTextField();
+		serverCPUSocketsTextField.setValue(new Integer(0));
+		serverCPUSocketsTextField.setColumns(10);
+		serverCPUSocketsTextField.setBounds(159, 523, 325, 20);
+		frame.getContentPane().add(serverCPUSocketsTextField);
+		
+		JLabel lblServerSockets = new JLabel("CPU Sockets");
+		lblServerSockets.setBounds(44, 526, 103, 14);
+		frame.getContentPane().add(lblServerSockets);
+		
+		serverCPUCoresTextField = new JFormattedTextField();
+		serverCPUCoresTextField.setValue(new Integer(0));
+		serverCPUCoresTextField.setColumns(10);
+		serverCPUCoresTextField.setBounds(159, 559, 325, 20);
+		frame.getContentPane().add(serverCPUCoresTextField);
+		
+		lblServerCPUCores = new JLabel("CPU Cores");
+		lblServerCPUCores.setBounds(44, 562, 77, 14);
+		frame.getContentPane().add(lblServerCPUCores);
+		
+		serverMemoryTextField = new JFormattedTextField();
+		serverMemoryTextField.setValue(new Integer(0));
+		serverMemoryTextField.setColumns(10);
+		serverMemoryTextField.setBounds(159, 595, 325, 20);
+		frame.getContentPane().add(serverMemoryTextField);
+		
+		lblServerGigabytesMemory = new JLabel("Memory");
+		lblServerGigabytesMemory.setBounds(44, 598, 77, 17);
+		frame.getContentPane().add(lblServerGigabytesMemory);
+		
+		serverServiceTagTextField = new JTextField();
+		serverServiceTagTextField.setColumns(10);
+		serverServiceTagTextField.setBounds(159, 631, 325, 20);
+		frame.getContentPane().add(serverServiceTagTextField);
+		
+		lblServerServiceTag = new JLabel("Service Tag");
+		lblServerServiceTag.setBounds(44, 631, 103, 20);
+		frame.getContentPane().add(lblServerServiceTag);
+		
+		serverWarrantyDateTextField = new JTextField();
+		serverWarrantyDateTextField.setColumns(10);
+		serverWarrantyDateTextField.setBounds(159, 667, 325, 20);
+		frame.getContentPane().add(serverWarrantyDateTextField);
+		
+		lblServerWarrantyExpiration = new JLabel("Warranty Date");
+		lblServerWarrantyExpiration.setBounds(44, 670, 103, 17);
+		frame.getContentPane().add(lblServerWarrantyExpiration);
+		
+		cabinetModifyList = new JComboBox();
+		cabinetModifyList.setBounds(556, 349, 325, 20);
+		frame.getContentPane().add(cabinetModifyList);
+		
+		JLabel lblModifyCabinets = new JLabel("Cabinet");
+		lblModifyCabinets.setBounds(556, 313, 144, 23);
+		frame.getContentPane().add(lblModifyCabinets);
+		
+		JButton btnDestroyCabinet = new JButton("Destroy");
+		btnDestroyCabinet.setEnabled(false);
+		btnDestroyCabinet.setBounds(898, 348, 103, 23);
+		frame.getContentPane().add(btnDestroyCabinet);
+		
+		JLabel label_1 = new JLabel("Power CCT");
+		label_1.setBounds(556, 454, 120, 14);
+		frame.getContentPane().add(label_1);
+		
+		powerCCTModifyList = new JComboBox();
+		powerCCTModifyList.setBounds(556, 487, 325, 20);
+		frame.getContentPane().add(powerCCTModifyList);
+		
+		JButton btnDestroyPowerCCT = new JButton("Destroy");
+		btnDestroyPowerCCT.setEnabled(false);
+		btnDestroyPowerCCT.setBounds(898, 486, 103, 23);
+		frame.getContentPane().add(btnDestroyPowerCCT);
+		
+		cabinetAddNewTextField = new JTextField();
+		cabinetAddNewTextField.setColumns(10);
+		cabinetAddNewTextField.setBounds(556, 382, 325, 20);
+		frame.getContentPane().add(cabinetAddNewTextField);
+		
+		JButton btnAddNewCabinet = new JButton("Add New");
+		btnAddNewCabinet.setEnabled(false);
+		btnAddNewCabinet.setBounds(898, 381, 103, 23);
+		frame.getContentPane().add(btnAddNewCabinet);
+		
+		JButton btnAddNewPowerCCT = new JButton("Add New");
+		btnAddNewPowerCCT.setEnabled(false);
+		btnAddNewPowerCCT.setBounds(898, 526, 103, 23);
+		frame.getContentPane().add(btnAddNewPowerCCT);
+		
+		powerAddNewTextField = new JTextField();
+		powerAddNewTextField.setColumns(10);
+		powerAddNewTextField.setBounds(556, 526, 325, 20);
+		frame.getContentPane().add(powerAddNewTextField);
+		
+		lblServer = new JLabel("Server");
+		lblServer.setBounds(35, 313, 144, 23);
+		frame.getContentPane().add(lblServer);
+		
+		cabinetPanel = new JPanel();
+		cabinetPanel.setBounds(541, 295, 470, 137);
+		frame.getContentPane().add(cabinetPanel);
+		
+		powerCCTPanel = new JPanel();
+		powerCCTPanel.setBounds(540, 439, 470, 137);
+		frame.getContentPane().add(powerCCTPanel);
+		
+		powerTable = new JTable((TableModel) null);
+		powerTable.setFillsViewportHeight(true);
+		powerTable.setBounds(540, 631, 625, 178);
+		frame.getContentPane().add(powerTable);
+		
+		JLabel lblPowerLoad = new JLabel("Power Load");
+		lblPowerLoad.setBounds(540, 598, 120, 14);
+		frame.getContentPane().add(lblPowerLoad);
+		
+		serverPanel = new JPanel();
+		serverPanel.setBounds(15, 295, 502, 514);
+		frame.getContentPane().add(serverPanel);
 	}
 	
 	public void checkButtons() {
@@ -296,16 +475,11 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		} else {
 			btnSave.setText("Save");
 		}
-		System.out.println("Start....");
-		System.out.println("Table... " + table.getSelectedRow());
 		if (table.getSelectedRow() >= 0) {
 			btnDelete.setEnabled(true);
 		} else {
 			btnDelete.setEnabled(false);
 		}
-		System.out.println("powercct: " + powerCCTComboBox.getSelectedIndex());
-		System.out.println("cabinet: " + cabinetComboBox.getSelectedIndex());
-		System.out.println("End....");
 		if (powerCCTComboBox.getSelectedIndex() != 0 && cabinetComboBox.getSelectedIndex() != 0) {
 			btnSave.setEnabled(true);
 		} else {
@@ -318,11 +492,9 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		powerCCTComboBox.addItem(addNew);
 		if (cabinetComboBox.getModel().getSelectedItem().getClass() == Cabinet.class) {
 			for (PowerCCT powerCCT: ((Cabinet) cabinetComboBox.getModel().getSelectedItem()).getPowerCCTArray()) {
-				System.out.println("Adding cct: " + powerCCT);
 				powerCCTComboBox.addItem(powerCCT);
 			}
 		}
-		System.out.println("Done?");
 	}
 
 	public void updateCabinetList() {
@@ -366,19 +538,90 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	public void doSave() {
 		undoButton = false;
 		String id = idTextField.getText();
-		String serverName = serverNameTextField.getText();
-		String serverIP = serverIPTextField.getText();
+		String serverName;
+		String serverIP;
+		String serverPurpose;
+		String serverOwner;
+		double serverProjectedPower;
+		int serverCores;
+		int serverProcessors;;
+		int serverMemory;
+		String serverServiceTag;
+		String serverWarranty;
+		System.out.println("Save Start: 0");
+		if (serverNameTextField.getText() != null) {
+			serverName = serverNameTextField.getText();
+		} else {
+			serverName = "";
+		}
+		System.out.println("1");
+		if (serverIPTextField.getText() != null) {
+			serverIP = serverIPTextField.getText();
+		} else {
+			serverIP = "";
+		}
+		System.out.println("2");
+		if (serverPurposeTextField.getText() != null) {
+			serverPurpose = serverPurposeTextField.getText();
+		} else {
+			serverPurpose = "";
+		}
+		System.out.println("3");
+		if (serverOwnerTextField.getText() != null) {
+			serverOwner = serverOwnerTextField.getText();
+		} else {
+			serverOwner = "";
+		}
+		System.out.println("4");
+		if (serverProjectedPowerTextField.getValue() != null) {
+			serverProjectedPower = (double) serverProjectedPowerTextField.getValue();
+		} else {
+			serverProjectedPower = 0;
+		}
+		System.out.println("5");
+		if (serverCPUCoresTextField.getValue() != null) {
+			serverCores = (int) serverCPUCoresTextField.getValue();
+		} else {
+			serverCores = 0;
+		}
+		System.out.println("6");
+		if (serverCPUSocketsTextField.getValue() != null) {
+			serverProcessors = (int) serverCPUSocketsTextField.getValue();
+		} else {
+			serverProcessors = 0;
+		}
+		System.out.println("7");
+		if (serverMemoryTextField.getValue() != null) {
+			serverMemory = (int) serverMemoryTextField.getValue();
+		} else {
+			serverMemory = 0;
+		}
+		System.out.println("8");
+		if (serverServiceTagTextField.getText() != null) {
+			serverServiceTag = serverServiceTagTextField.getText();
+		} else {
+			serverServiceTag = "";
+		}
+		System.out.println("9");
+		if (serverWarrantyDateTextField.getText() != null) {
+			serverWarranty = serverWarrantyDateTextField.getText();
+		} else {
+			serverWarranty = "";
+		}
+		System.out.println("Save end...");
 		PowerCCT powerCircuit;
 		Cabinet serverCabinet;  
 		Server server;
-		if (powerCCTComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
-			powerCircuit = (PowerCCT) powerCCTComboBox.getSelectedItem();
-		} else {
-			powerCircuit = new PowerCCT();
-			powerCircuit.setName(powerCCTTextField.getText());
-			powerCCTs.add(powerCircuit);
-			powerCCTRepository.save(powerCircuit);
-		}
+		powerCircuit = (PowerCCT) powerCCTComboBox.getSelectedItem();
+		//Depreciated by new method for data entry
+//		if (powerCCTComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
+//			powerCircuit = (PowerCCT) powerCCTComboBox.getSelectedItem();
+//		} else {
+//			powerCircuit = new PowerCCT();
+//			powerCircuit.setName(powerCCTTextField.getText());
+//			powerCCTs.add(powerCircuit);
+//			powerCCTRepository.save(powerCircuit);
+//		}
 		if (CustomQueryHelper.getServerWithId(id) != null) {
 			server = CustomQueryHelper.getServerWithId(id);
 		} else {
@@ -387,14 +630,24 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		server.setName(serverName);
 		server.setIp(serverIP);
 		server.setPowerCCT(powerCircuit);
-		if (cabinetComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
-			serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
-		} else {
-			serverCabinet = new Cabinet();
-			serverCabinet.setId(getNextCabinetId());
-			serverCabinet.addPowerCCT(powerCircuit);
-			serverCabinet.setName(cabinetTextField.getText());
-		}
+		server.setPurpose(serverPurpose);
+		server.setOwner(serverOwner);
+		server.setProjectedPower(serverProjectedPower);
+		server.setCores(serverCores);
+		server.setProcessors(serverProcessors);
+		server.setMemory(serverMemory);
+		server.setServiceTag(serverServiceTag);
+		server.setWarrantyExpiration(serverWarranty);
+		serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
+		//Depreciated by new method for data entry
+//		if (cabinetComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
+//			serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
+//		} else {
+//			serverCabinet = new Cabinet();
+//			serverCabinet.setId(getNextCabinetId());
+//			serverCabinet.addPowerCCT(powerCircuit);
+//			serverCabinet.setName(cabinetTextField.getText());
+//		}
 		save(serverCabinet, server);
 		doCleanCabinets();
 		table.clearSelection();
@@ -427,7 +680,14 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 						serverLoop.setName(server.getName());
 						serverLoop.setIp(server.getIp());
 						serverLoop.setPowerCCT(server.getPowerCCT());
-						debugPrintServers();
+						serverLoop.setPurpose(server.getPurpose());
+						serverLoop.setOwner(server.getOwner());
+						serverLoop.setProjectedPower(server.getProjectedPower());
+						serverLoop.setCores(server.getCores());
+						serverLoop.setProcessors(server.getProcessors());
+						serverLoop.setMemory(server.getMemory());
+						serverLoop.setServiceTag(server.getServiceTag());
+						serverLoop.setWarrantyExpiration(server.getWarrantyExpiration());
 						serverRepository.save(serverLoop);
 						foundUpdate = true;
 						break outerloop;
@@ -588,14 +848,70 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	
 	private void populateFields() {
 		try {
-
+			
 			idTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
-			serverNameTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
-			serverIPTextField.setText(table.getModel()
-					.getValueAt(table.getSelectedRow(), 2).toString());
-			cabinetComboBox.getModel().setSelectedItem(table.getModel().getValueAt(table.getSelectedRow(), 3));
-			updatePowerCCTList();
-			powerCCTComboBox.getModel().setSelectedItem(table.getModel().getValueAt(table.getSelectedRow(), 4));
+			if (table.getModel().getValueAt(table.getSelectedRow(), 1) == null) {
+				serverNameTextField.setText("");
+			} else {
+				serverNameTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 2) == null) {
+				serverIPTextField.setText("");
+			} else {
+				serverIPTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 3) == null) {
+				serverPurposeTextField.setText("");
+			} else {
+				serverPurposeTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 3).toString());
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 4) == null) {
+				serverOwnerTextField.setText("");
+			} else {
+				serverOwnerTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 4).toString());
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 4) == null) {
+				serverOwnerTextField.setText("");
+			} else {
+				serverOwnerTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 4).toString());
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 5) == null) {
+				serverProjectedPowerTextField.setValue(0);
+			} else {
+				serverProjectedPowerTextField.setValue((double) table.getModel().getValueAt(table.getSelectedRow(), 5));
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 6) == null) {
+				serverCPUSocketsTextField.setValue(0);
+			} else {
+				serverCPUSocketsTextField.setValue((int) table.getModel().getValueAt(table.getSelectedRow(), 6));
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 7) == null) {
+				serverCPUCoresTextField.setValue(0);
+			} else {
+				serverCPUCoresTextField.setValue((int) table.getModel().getValueAt(table.getSelectedRow(), 7));
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 8) == null) {
+				serverMemoryTextField.setValue(0);
+			} else {
+				serverMemoryTextField.setValue(table.getModel().getValueAt(table.getSelectedRow(), 8));
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 9) == null) {
+				serverServiceTagTextField.setText("");
+			} else {
+				serverServiceTagTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 9).toString());
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 10) == null) {
+				serverWarrantyDateTextField.setText("");
+			} else {
+				serverWarrantyDateTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 10).toString());
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 11) != null) {
+				cabinetComboBox.getModel().setSelectedItem(table.getModel().getValueAt(table.getSelectedRow(), 11));
+				updatePowerCCTList();
+			}
+			if (table.getModel().getValueAt(table.getSelectedRow(), 12) != null) {
+				powerCCTComboBox.getModel().setSelectedItem(table.getModel().getValueAt(table.getSelectedRow(), 12));
+			}
 
 		} catch (Exception e) {}
 	}
@@ -604,7 +920,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		refreshLocalLists();
 		// swingTeacherModel = new SwingTeacherModel();
 		Object[][] data = null;
-		data = new Object[countServers(cabinets)][5];
+		data = new Object[countServers(cabinets)][13];
 		int i = 0;
 		
 		for (Cabinet cabinet : cabinets) {
@@ -613,8 +929,16 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 				data[i][0] = server.getId();
 				data[i][1] = server;
 				data[i][2] = server.getIp();
-				data[i][3] = cabinet;
-				data[i][4] = server.getPowerCCT();
+				data[i][3] = server.getPurpose();
+				data[i][4] = server.getOwner();
+				data[i][5] = server.getProjectedPower();
+				data[i][6] = server.getProcessors();
+				data[i][7] = server.getCores();
+				data[i][8] = server.getMemory();
+				data[i][9] = server.getServiceTag();
+				data[i][10] = server.getWarrantyExpiration();
+				data[i][11] = cabinet;
+				data[i][12] = server.getPowerCCT();
 				i++;
 			}
 		}

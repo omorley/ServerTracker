@@ -22,17 +22,17 @@ public class Server {
 	// Logical owner of server
 	private String owner;
 	// Projected power utilization
-	private double projectedPower;
+	private double projectedPower = 0;
 	// Number of filled sockets in server
-	private int processors;
+	private int processors = 0;
 	// Number of cores per processor
-	private int cores;
+	private int cores = 0;
 	// Gigabytes of ram in server
-	private int memory;
+	private int memory = 0;
 	// Service tag of server
 	private String serviceTag;
 	// Date of warranty expiration
-	private int warrantyExpiration;
+	private String warrantyExpiration;
 	// String id because I'm told to have it
 	@Id
 	private String id;
@@ -194,13 +194,13 @@ public class Server {
 	/**
 	 * @return the warrantyExpiration
 	 */
-	public int getWarrantyExpiration() {
+	public String getWarrantyExpiration() {
 		return warrantyExpiration;
 	}
 	/**
 	 * @param warrantyExpiration the warrantyExpiration to set
 	 */
-	public void setWarrantyExpiration(int warrantyExpiration) {
+	public void setWarrantyExpiration(String warrantyExpiration) {
 		this.warrantyExpiration = warrantyExpiration;
 	}
 //	/**
@@ -268,6 +268,7 @@ public class Server {
 //				+ ", getPowerCCT()=" + getPowerCCT() + ", getId()=" + getId()
 //				+ "]";
 	}
+
 
 
 	
