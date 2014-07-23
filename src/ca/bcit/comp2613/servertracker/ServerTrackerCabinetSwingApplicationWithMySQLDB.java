@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
-//import java.util.UUID;
+import java.util.UUID;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
@@ -22,9 +22,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
+import javax.swing.text.Document;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -77,6 +80,11 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 
 	private JButton btnDelete;
 	private JButton btnSave;
+	private JButton btnAddNewCabinet;
+	private JButton btnNewButton;
+	private JButton btnDestroyCabinet;
+	private JButton btnDestroyPowerCCT;
+	private JButton btnAddNewPowerCCT;
 	
 	private JPanel serverPanel;
 	private JPanel cabinetPanel;
@@ -241,6 +249,10 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		lblServerId.setBounds(44, 277, 46, 14);
 		frame.getContentPane().add(lblServerId).setVisible(false);
 
+		cabinetModifyList = new JComboBox();
+		cabinetModifyList.setBounds(556, 349, 325, 20);
+		frame.getContentPane().add(cabinetModifyList);
+		
 //		cabinetTextField = new JTextField();
 //		cabinetTextField.setBounds(159, 412, 325, 20);
 //		frame.getContentPane().add(cabinetTextField);
@@ -303,7 +315,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		frame.getContentPane().add(btnDelete);
 		btnDelete.setEnabled(false);
 		
-		JButton btnNewButton = new JButton("New");
+		btnNewButton = new JButton("New");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				doNew();
@@ -396,15 +408,11 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		lblServerWarrantyExpiration.setBounds(44, 670, 103, 17);
 		frame.getContentPane().add(lblServerWarrantyExpiration);
 		
-		cabinetModifyList = new JComboBox();
-		cabinetModifyList.setBounds(556, 349, 325, 20);
-		frame.getContentPane().add(cabinetModifyList);
-		
 		JLabel lblModifyCabinets = new JLabel("Cabinet");
 		lblModifyCabinets.setBounds(556, 313, 144, 23);
 		frame.getContentPane().add(lblModifyCabinets);
 		
-		JButton btnDestroyCabinet = new JButton("Destroy");
+		btnDestroyCabinet = new JButton("Destroy");
 		btnDestroyCabinet.setEnabled(false);
 		btnDestroyCabinet.setBounds(898, 348, 103, 23);
 		frame.getContentPane().add(btnDestroyCabinet);
@@ -417,7 +425,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		powerCCTModifyList.setBounds(556, 487, 325, 20);
 		frame.getContentPane().add(powerCCTModifyList);
 		
-		JButton btnDestroyPowerCCT = new JButton("Destroy");
+		btnDestroyPowerCCT = new JButton("Destroy");
 		btnDestroyPowerCCT.setEnabled(false);
 		btnDestroyPowerCCT.setBounds(898, 486, 103, 23);
 		frame.getContentPane().add(btnDestroyPowerCCT);
@@ -426,21 +434,68 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		cabinetAddNewTextField.setColumns(10);
 		cabinetAddNewTextField.setBounds(556, 382, 325, 20);
 		frame.getContentPane().add(cabinetAddNewTextField);
+		cabinetAddNewTextField.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void changedUpdate(DocumentEvent e) {}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				btnAddNewCabinet.setEnabled(true);
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				if ( cabinetAddNewTextField.getText().length() < 1) {
+					btnAddNewCabinet.setEnabled(false);
+				}
+			}
+			
+		});
 		
-		JButton btnAddNewCabinet = new JButton("Add New");
+		btnAddNewCabinet = new JButton("Add New");
 		btnAddNewCabinet.setEnabled(false);
 		btnAddNewCabinet.setBounds(898, 381, 103, 23);
 		frame.getContentPane().add(btnAddNewCabinet);
-		
-		JButton btnAddNewPowerCCT = new JButton("Add New");
+		btnAddNewCabinet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addCabinet(cabinetAddNewTextField.getText());
+				cabinetAddNewTextField.setText("");
+				checkButtons();
+				btnAddNewCabinet.setEnabled(false);
+			}
+		});
+
+		btnAddNewPowerCCT = new JButton("Add New");
 		btnAddNewPowerCCT.setEnabled(false);
 		btnAddNewPowerCCT.setBounds(898, 526, 103, 23);
 		frame.getContentPane().add(btnAddNewPowerCCT);
+		btnAddNewPowerCCT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addPowerCCT(powerAddNewTextField.getText());
+				powerAddNewTextField.setText("");
+				checkButtons();
+				btnAddNewPowerCCT.setEnabled(false);
+			}
+		});
 		
 		powerAddNewTextField = new JTextField();
 		powerAddNewTextField.setColumns(10);
 		powerAddNewTextField.setBounds(556, 526, 325, 20);
 		frame.getContentPane().add(powerAddNewTextField);
+		powerAddNewTextField.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void changedUpdate(DocumentEvent e) {}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				btnAddNewPowerCCT.setEnabled(true);
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				if ( powerAddNewTextField.getText().length() < 1) {
+					btnAddNewPowerCCT.setEnabled(false);
+				}
+			}
+			
+		});
+
 		
 		lblServer = new JLabel("Server");
 		lblServer.setBounds(35, 313, 144, 23);
@@ -466,6 +521,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		serverPanel = new JPanel();
 		serverPanel.setBounds(15, 295, 502, 514);
 		frame.getContentPane().add(serverPanel);
+		updatePowerCCTModifyList();
 	}
 	
 	public void checkButtons() {
@@ -487,23 +543,65 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		}
 	}
 	
+	public void addCabinet(String cabinetName) {
+		Cabinet newCabinet = new Cabinet(cabinetName);
+		newCabinet.setId(UUID.randomUUID().toString());
+		cabinetRepository.save(newCabinet);
+		cabinets.add(newCabinet);
+		updateCabinetList();
+		updatePowerCCTModifyList();
+	}
+
+	public void destroyCabinet(Cabinet cabinet) {
+		System.out.println("Please flesh this out...");
+		updateCabinetList();
+		updatePowerCCTModifyList();
+	}
+	
+	public void addPowerCCT(String powerCCTName) {
+		PowerCCT newPowerCCT = new PowerCCT(powerCCTName);
+		powerCCTRepository.save(newPowerCCT);
+		powerCCTs.add(newPowerCCT);
+		updateCabinetList();
+		updatePowerCCTModifyList();
+	}
+
+	public void destroyPowerCCT(PowerCCT powerCCT) {
+		System.out.println("Please flesh this out...");
+		updateCabinetList();
+		updatePowerCCTModifyList();
+	}
+	
 	public void updatePowerCCTList() {
 		powerCCTComboBox.removeAllItems();
 		powerCCTComboBox.addItem(addNew);
-		if (cabinetComboBox.getModel().getSelectedItem().getClass() == Cabinet.class) {
-			for (PowerCCT powerCCT: ((Cabinet) cabinetComboBox.getModel().getSelectedItem()).getPowerCCTArray()) {
-				powerCCTComboBox.addItem(powerCCT);
+		if (cabinetComboBox.getModel().getSelectedItem() != null) {
+			if (cabinetComboBox.getModel().getSelectedItem().getClass() == Cabinet.class) {
+				for (PowerCCT powerCCT: ((Cabinet) cabinetComboBox.getModel().getSelectedItem()).getPowerCCTArray()) {
+					powerCCTComboBox.addItem(powerCCT);
+				}
 			}
 		}
 	}
 
 	public void updateCabinetList() {
 		cabinetComboBox.removeAllItems();
+		cabinetModifyList.removeAllItems();
 		cabinetComboBox.addItem(addNew);
 		for (Cabinet cabinet: cabinets) {
 			cabinetComboBox.addItem(cabinet);
+			cabinetModifyList.addItem(cabinet);
 		}
 	}
+
+	public void updatePowerCCTModifyList() {
+		setPowerCCTs(getPowerCCTs());
+		powerCCTModifyList.removeAllItems();
+		for (PowerCCT powerCCT: powerCCTs) {
+			powerCCTModifyList.addItem(powerCCT);
+		}
+	}
+	
 	public static List<Cabinet> getCabinets() {
 		return copyIterator(cabinetRepository.findAll().iterator());
 	}
@@ -945,6 +1043,8 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		swingServerTrackerModel.setDataVector(data, columnNames);
 		table.removeColumn(table.getColumnModel().getColumn(0));
 		table.repaint();
+//		updateCabinetList();
+//		updatePowerCCTModifyList();
 		checkButtons();
 	}
 	
