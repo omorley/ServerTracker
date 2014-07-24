@@ -145,7 +145,10 @@ public class Cabinet {
 	public List<Server> getServersArray() {
 		return servers;
 	}
-	
+
+	public void clearServersArray() {
+		servers.clear();
+	}
 	/*
 	 * Method to add a circuit to PowerCCT ArrayList
 	 * @param PowerCCT the circuit to add

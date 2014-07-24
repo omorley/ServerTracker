@@ -90,6 +90,8 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	private JPanel cabinetPanel;
 	private JPanel powerCCTPanel;
 	
+	private String userFeedback = "";
+	
 	private SwingServerTrackerModel swingServerTrackerModel;
 	public String[] columnNames = new String[] { "id", "Name", "IP", "Purpose", "Owner", "Power Usage", "CPU Sockets", "CPU Cores", "Memory", "Service Tag", "Warranty Date", "Cabinet", "PowerCCT" };
 	private JTextField idTextField;
@@ -413,10 +415,15 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		frame.getContentPane().add(lblModifyCabinets);
 		
 		btnDestroyCabinet = new JButton("Destroy");
-		btnDestroyCabinet.setEnabled(false);
+		btnDestroyCabinet.setEnabled(true);
 		btnDestroyCabinet.setBounds(898, 348, 103, 23);
 		frame.getContentPane().add(btnDestroyCabinet);
-		
+		btnDestroyCabinet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				destroyCabinet((Cabinet) cabinetModifyList.getSelectedItem());
+			}
+		});
+
 		JLabel label_1 = new JLabel("Power CCT");
 		label_1.setBounds(556, 454, 120, 14);
 		frame.getContentPane().add(label_1);
@@ -544,26 +551,63 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	}
 	
 	public void addCabinet(String cabinetName) {
-		Cabinet newCabinet = new Cabinet(cabinetName);
-		newCabinet.setId(UUID.randomUUID().toString());
-		cabinetRepository.save(newCabinet);
-		cabinets.add(newCabinet);
-		updateCabinetList();
-		updatePowerCCTModifyList();
+		//userFeedback
+		if (Helper.findCabinetExactName(cabinets, cabinetName).size() == 0) {
+			Cabinet newCabinet = new Cabinet(cabinetName);
+			newCabinet.setId(UUID.randomUUID().toString());
+			cabinetRepository.save(newCabinet);
+			cabinets.add(newCabinet);
+			updateCabinetList();
+			updatePowerCCTModifyList();
+		} else {
+			userFeedback = "Error, cabinet with this name already exists.";
+		}
 	}
+	
 
 	public void destroyCabinet(Cabinet cabinet) {
-		System.out.println("Please flesh this out...");
+		refreshLocalLists();
+		while (cabinet.getServersArray().size() > 0) {
+			System.out.println("Running...");
+			Server server = cabinet.getServersArray().get(0);
+			server.setPowerCCT(null);
+			serverRepository.save(server);
+			cabinet.removeServer(server);
+			
+		}
+
+		//		for (Server server:cabinet.getServersArray()) {
+		//			server.setPowerCCT(null);
+		//			serverRepository.save(server);
+		//		}
+		//		cabinet.clearServersArray();
+		while (cabinet.getPowerCCTArray().size() > 0) {
+			PowerCCT powerCCT = cabinet.getPowerCCTArray().get(0);
+			cabinet.removePowerCCT(powerCCT);
+			powerCCTRepository.save(powerCCT);
+		}
+//		for (PowerCCT powerCCT:cabinet.getPowerCCTArray()) {
+//			cabinet.removePowerCCT(powerCCT);
+//			powerCCTRepository.save(powerCCT);
+//		}
+		cabinetRepository.delete(cabinet);
+		cabinets.remove(cabinet);
+		refreshLocalLists();
 		updateCabinetList();
 		updatePowerCCTModifyList();
+		refreshTable();
 	}
 	
 	public void addPowerCCT(String powerCCTName) {
-		PowerCCT newPowerCCT = new PowerCCT(powerCCTName);
-		powerCCTRepository.save(newPowerCCT);
-		powerCCTs.add(newPowerCCT);
-		updateCabinetList();
-		updatePowerCCTModifyList();
+		if(Helper.findPowerCCTsExactName(powerCCTs, powerCCTName).size() == 0) {
+			PowerCCT newPowerCCT = new PowerCCT(powerCCTName);
+			powerCCTRepository.save(newPowerCCT);
+			powerCCTs.add(newPowerCCT);
+			updateCabinetList();
+			updatePowerCCTModifyList();
+		} else {
+			userFeedback = "Error, power circuit with this name already exists.";
+		}
 	}
 
 	public void destroyPowerCCT(PowerCCT powerCCT) {
@@ -573,12 +617,21 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	}
 	
 	public void updatePowerCCTList() {
+		refreshLocalLists();
 		powerCCTComboBox.removeAllItems();
 		powerCCTComboBox.addItem(addNew);
 		if (cabinetComboBox.getModel().getSelectedItem() != null) {
 			if (cabinetComboBox.getModel().getSelectedItem().getClass() == Cabinet.class) {
 				for (PowerCCT powerCCT: ((Cabinet) cabinetComboBox.getModel().getSelectedItem()).getPowerCCTArray()) {
 					powerCCTComboBox.addItem(powerCCT);
+				}
+				for (PowerCCT powerCCT: powerCCTs) {
+					System.out.println("updatePowerCCTList deadline: " + Helper.findPowerCCTInCabinet(cabinets,powerCCT));
+					System.out.println("PowerCCT: " + powerCCT);
+					if (Helper.findPowerCCTInCabinet(cabinets,powerCCT) == null) {
+						System.out.println("Empty.. adding: " + powerCCT);
+						powerCCTComboBox.addItem(powerCCT);
+					}
 				}
 			}
 		}
@@ -737,6 +790,9 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		server.setServiceTag(serverServiceTag);
 		server.setWarrantyExpiration(serverWarranty);
 		serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
+		if (! serverCabinet.getPowerCCTArray().contains(powerCircuit)) {
+			serverCabinet.addPowerCCT(powerCircuit);
+		}
 		//Depreciated by new method for data entry
 //		if (cabinetComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
 //			serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
@@ -748,6 +804,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 //		}
 		save(serverCabinet, server);
 		doCleanCabinets();
+		refreshLocalLists();
 		table.clearSelection();
 		checkButtons();
 		refreshTable();
@@ -946,69 +1003,86 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	
 	private void populateFields() {
 		try {
-			
 			idTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
+			System.out.println("1");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 1) == null) {
 				serverNameTextField.setText("");
 			} else {
 				serverNameTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
 			}
+			System.out.println("2");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 2) == null) {
 				serverIPTextField.setText("");
 			} else {
 				serverIPTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
 			}
+			System.out.println("3");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 3) == null) {
 				serverPurposeTextField.setText("");
 			} else {
 				serverPurposeTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 3).toString());
 			}
+			System.out.println("4");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 4) == null) {
 				serverOwnerTextField.setText("");
 			} else {
 				serverOwnerTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 4).toString());
 			}
+			System.out.println("5");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 4) == null) {
 				serverOwnerTextField.setText("");
 			} else {
 				serverOwnerTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 4).toString());
 			}
+			System.out.println("6");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 5) == null) {
 				serverProjectedPowerTextField.setValue(0);
 			} else {
 				serverProjectedPowerTextField.setValue((double) table.getModel().getValueAt(table.getSelectedRow(), 5));
 			}
+			System.out.println("7");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 6) == null) {
 				serverCPUSocketsTextField.setValue(0);
 			} else {
 				serverCPUSocketsTextField.setValue((int) table.getModel().getValueAt(table.getSelectedRow(), 6));
 			}
+			System.out.println("8");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 7) == null) {
 				serverCPUCoresTextField.setValue(0);
 			} else {
 				serverCPUCoresTextField.setValue((int) table.getModel().getValueAt(table.getSelectedRow(), 7));
 			}
+			System.out.println("9");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 8) == null) {
 				serverMemoryTextField.setValue(0);
 			} else {
 				serverMemoryTextField.setValue(table.getModel().getValueAt(table.getSelectedRow(), 8));
 			}
+			System.out.println("10");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 9) == null) {
 				serverServiceTagTextField.setText("");
 			} else {
 				serverServiceTagTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 9).toString());
 			}
+			System.out.println("11");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 10) == null) {
 				serverWarrantyDateTextField.setText("");
 			} else {
 				serverWarrantyDateTextField.setText(table.getModel().getValueAt(table.getSelectedRow(), 10).toString());
 			}
+			System.out.println("12");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 11) != null) {
 				cabinetComboBox.getModel().setSelectedItem(table.getModel().getValueAt(table.getSelectedRow(), 11));
 				updatePowerCCTList();
+			} else {
+				cabinetComboBox.setSelectedIndex(0);
+				updatePowerCCTList();
 			}
+			System.out.println("13");
 			if (table.getModel().getValueAt(table.getSelectedRow(), 12) != null) {
 				powerCCTComboBox.getModel().setSelectedItem(table.getModel().getValueAt(table.getSelectedRow(), 12));
+			} else {
+				powerCCTComboBox.setSelectedIndex(0);
 			}
 
 		} catch (Exception e) {}
@@ -1016,29 +1090,28 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	
 	private void refreshTable() {
 		refreshLocalLists();
+		System.out.println("Server count 3: " + servers.size());
 		// swingTeacherModel = new SwingTeacherModel();
 		Object[][] data = null;
-		data = new Object[countServers(cabinets)][13];
+		data = new Object[servers.size()][13];
 		int i = 0;
 		
-		for (Cabinet cabinet : cabinets) {
-			List<Server> currentCabinet = cabinet.getServersArray();
-			for (Server server : currentCabinet) {
-				data[i][0] = server.getId();
-				data[i][1] = server;
-				data[i][2] = server.getIp();
-				data[i][3] = server.getPurpose();
-				data[i][4] = server.getOwner();
-				data[i][5] = server.getProjectedPower();
-				data[i][6] = server.getProcessors();
-				data[i][7] = server.getCores();
-				data[i][8] = server.getMemory();
-				data[i][9] = server.getServiceTag();
-				data[i][10] = server.getWarrantyExpiration();
-				data[i][11] = cabinet;
-				data[i][12] = server.getPowerCCT();
-				i++;
-			}
+		for (Server server : servers) {
+			data[i][0] = server.getId();
+			data[i][1] = server;
+			data[i][2] = server.getIp();
+			data[i][3] = server.getPurpose();
+			data[i][4] = server.getOwner();
+			data[i][5] = server.getProjectedPower();
+			data[i][6] = server.getProcessors();
+			data[i][7] = server.getCores();
+			data[i][8] = server.getMemory();
+			data[i][9] = server.getServiceTag();
+			data[i][10] = server.getWarrantyExpiration();
+			System.out.println("Searching for cabinet!!!!!");
+			data[i][11] = Helper.findServerInCabinet(cabinets,server);
+			data[i][12] = server.getPowerCCT();
+			i++;
 		}
 		swingServerTrackerModel.setDataVector(data, columnNames);
 		table.removeColumn(table.getColumnModel().getColumn(0));

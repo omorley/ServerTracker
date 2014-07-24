@@ -19,6 +19,8 @@ import java.util.Random;
 
 
 
+
+
 //Log4j
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -282,6 +284,48 @@ public class Helper {
 	 * @param circuitName
 	 * @return
 	 */
+	public static ArrayList<PowerCCT> findPowerCCTsExactName(List<PowerCCT> powerCCTs,String circuitName) {
+		ArrayList<PowerCCT> foundCCTs = new ArrayList<>();
+		for (PowerCCT powerCCT : powerCCTs) {
+			if (powerCCT.getName().equals(circuitName)) {
+				foundCCTs.add(powerCCT);
+			}
+		}
+		return foundCCTs;
+	}
+
+	
+	public static Cabinet findServerInCabinet(List<Cabinet> cabinets,Server server) {
+		for (Cabinet cabinet:cabinets) {
+			for (Server serverInCabinet:cabinet.getServersArray()) {
+				if (serverInCabinet.getId() == server.getId()) {
+					System.out.println("Cabinet found: " + cabinet);
+					return cabinet; 
+				}
+			}
+		}
+		System.out.println("No cabinet found...");
+		return null;
+	}
+
+	public static Cabinet findPowerCCTInCabinet(List<Cabinet> cabinets,PowerCCT powerCCT) {
+		for (Cabinet cabinet:cabinets) {
+			System.out.println("Checking cabinet..." + cabinet);
+			for (PowerCCT cabinetPowerCCT: cabinet.getPowerCCTArray()) {
+				if (cabinetPowerCCT.getId() == powerCCT.getId()) {
+					return cabinet;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Find power cct by exact name match
+	 * @param cabinets
+	 * @param circuitName
+	 * @return
+	 */
 	public static PowerCCT findFirstPowerCCTExactName(List<Cabinet> cabinets,String circuitName) {
 		for (Cabinet cabinet : cabinets) {
 			for (PowerCCT powerCCT : cabinet.getPowerCCTArray()) {
@@ -292,6 +336,7 @@ public class Helper {
 		}
 		return null;
 	}
+	
 	
 	/**
 	 * Find first cabinet by exact name match
@@ -314,7 +359,7 @@ public class Helper {
 	 * @param cabinetName
 	 * @return
 	 */
-	public static ArrayList<Cabinet> findCabinetExactName(ArrayList<Cabinet> cabinets,String cabinetName) {
+	public static ArrayList<Cabinet> findCabinetExactName(List<Cabinet> cabinets,String cabinetName) {
 		ArrayList<Cabinet> foundCabinets = new ArrayList<>();
 		for (Cabinet cabinet : cabinets) {
 			if (cabinet.getName().equals(cabinetName)) {
