@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.List;
@@ -26,6 +28,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.Document;
 
@@ -34,6 +37,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import ca.bcit.comp2613.a00251471.util.Helper;
+import ca.bcit.comp2613.a00251471.util.Report;
+import ca.bcit.comp2613.servertracker.model.AggregatePower;
 import ca.bcit.comp2613.servertracker.model.Cabinet;
 import ca.bcit.comp2613.servertracker.model.PowerCCT;
 import ca.bcit.comp2613.servertracker.model.Server;
@@ -94,7 +99,9 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	private String userFeedback = "";
 	
 	private SwingServerTrackerModel swingServerTrackerModel;
+	private SwingServerTrackerModel swingPowerUsageModel;
 	public String[] columnNames = new String[] { "id", "Name", "IP", "Purpose", "Owner", "Power Usage", "CPU Sockets", "CPU Cores", "Memory", "Service Tag", "Warranty Date", "Cabinet", "PowerCCT" };
+	public String[] powerTableColumnNames = new String[] { "PowerCCT", "Power Usage", "Circuit Capacity" };
 	private JTextField idTextField;
 	private static List<Cabinet> cabinets;
 	private static List<Server> servers;
@@ -198,6 +205,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 					}
 				});
 		refreshTable();
+		refreshPowerTable();
 		doNew();
 	}
 	
@@ -522,7 +530,8 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		powerCCTPanel.setBounds(540, 439, 470, 137);
 		frame.getContentPane().add(powerCCTPanel);
 		
-		powerTable = new JTable((TableModel) null);
+		swingPowerUsageModel = new SwingServerTrackerModel();
+		powerTable = new JTable(swingPowerUsageModel);
 		powerTable.setFillsViewportHeight(true);
 		powerTable.setBounds(540, 631, 625, 178);
 		frame.getContentPane().add(powerTable);
@@ -562,9 +571,10 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			Cabinet newCabinet = new Cabinet(cabinetName);
 			newCabinet.setId(UUID.randomUUID().toString());
 			cabinetRepository.save(newCabinet);
-			cabinets.add(newCabinet);
+//			cabinets.add(newCabinet);
 			updateCabinetList();
-			updatePowerCCTModifyList();
+			refreshLocalLists();
+//			updatePowerCCTModifyList();
 		} else {
 			userFeedback = "Err or, cabinet with this name already exists.";
 		}
@@ -597,7 +607,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 //			powerCCTRepository.save(powerCCT);
 //		}
 		cabinetRepository.delete(cabinet);
-		cabinets.remove(cabinet);
+//		cabinets.remove(cabinet);
 		refreshLocalLists();
 		updateCabinetList();
 		updatePowerCCTModifyList();
@@ -618,7 +628,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 
 	public void destroyPowerCCT(PowerCCT powerCCT) {
 		refreshLocalLists();
-		for (Cabinet cabinet: cabinets) {
+		for (Cabinet cabinet: getCabinets()) {
 			for (PowerCCT powerCCTArray:cabinet.getPowerCCTArray()) {
 				if (powerCCTArray.getId() == powerCCT.getId()) {
 					cabinet.removePowerCCT(powerCCT);
@@ -668,7 +678,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		cabinetComboBox.removeAllItems();
 		cabinetModifyList.removeAllItems();
 		cabinetComboBox.addItem(addNew);
-		for (Cabinet cabinet: cabinets) {
+		for (Cabinet cabinet: getCabinets()) {
 			cabinetComboBox.addItem(cabinet);
 			cabinetModifyList.addItem(cabinet);
 		}
@@ -818,12 +828,12 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		server.setWarrantyExpiration(serverWarranty);
 		serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
 		//Ghetto fix for the win
-		for (Cabinet fixLink: cabinets) {
-			if (fixLink.getId() == ((Cabinet) cabinetComboBox.getSelectedItem()).getId()) {
-				serverCabinet = fixLink;
-				break;
-			}
-		}
+//		for (Cabinet fixLink: cabinets) {
+//			if (fixLink.getId() == ((Cabinet) cabinetComboBox.getSelectedItem()).getId()) {
+//				serverCabinet = fixLink;
+//				break;
+//			}
+//		}
 		if (! serverCabinet.getPowerCCTArray().contains(powerCircuit)) {
 			serverCabinet.addPowerCCT(powerCircuit);
 			powerCCTRepository.save(powerCircuit);
@@ -855,15 +865,8 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			System.out.println(debug123.getId());
 		}
 		System.out.println("Listing complete 2...");
-//		if (! cabinets.contains(newCabinet)) {
-//			debugPrintServers();
-//			System.out.println("And new cabinet is... " + newCabinet);
-//			cabinets.add(newCabinet);
-//			cabinetRepository.save(newCabinet);
-//			debugPrintServers();
-//		}
 		outerloop:
-		for (Cabinet cabinet : cabinets) {
+		for (Cabinet cabinet : getCabinets()) {
 			Iterator<Server> iter = cabinet.getServersArray().iterator();
 			while (iter.hasNext()) {
 				Server serverLoop = iter.next();
@@ -890,19 +893,12 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 						cabinet.removeServer(server);
 						cabinetRepository.save(cabinet);
 						newCabinet.addServer(server);
-
-						System.out.println("Number of cabinets: " + cabinets.size());
-						
-						
-						for (Cabinet cabinetDebug: cabinets) {
-							System.out.println("Cabinet: " + cabinetDebug + " Cabinet id: " + cabinetDebug.getId());
-
-							for (PowerCCT powerCCTDebug: cabinetDebug.getPowerCCTArray()) {
-								System.out.println("Power circuit: " + powerCCTDebug + " ID: " + powerCCTDebug.getId());
+						for (Cabinet ghettoFixCabinet: getCabinets()) {
+							if (ghettoFixCabinet.getId().equals(newCabinet.getId())) {
+								ghettoFixCabinet.addServer(server);
+								cabinetRepository.save(ghettoFixCabinet);
 							}
 						}
-
-						cabinetRepository.save(newCabinet);
 						foundUpdate = true;
 						System.out.println("Update complete");
 						break outerloop;
@@ -912,9 +908,18 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		}
 		if (!foundUpdate) { 
 			// do an insert
-			newCabinet.addServer(server);
 //			cabinets.add(newCabinet);
-			cabinetRepository.save(newCabinet);
+			for (Cabinet ghettoFixCabinet: getCabinets()) {
+				if (ghettoFixCabinet.getId().equals(newCabinet.getId())) {
+					ghettoFixCabinet.addServer(server);
+					cabinetRepository.save(ghettoFixCabinet);
+					foundUpdate = true;
+				}
+			}
+			if (! foundUpdate) {
+				newCabinet.addServer(server);
+				cabinetRepository.save(newCabinet);
+			}
 		}
 		debugPrintServers();
 	}
@@ -1139,7 +1144,6 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	
 	private void refreshTable() {
 		refreshLocalLists();
-		System.out.println("Server count 3: " + servers.size());
 		// swingTeacherModel = new SwingTeacherModel();
 		Object[][] data = null;
 		data = new Object[servers.size()][13];
@@ -1158,7 +1162,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			data[i][9] = server.getServiceTag();
 			data[i][10] = server.getWarrantyExpiration();
 			System.out.println("Searching for cabinet!!!!!");
-			data[i][11] = Helper.findServerInCabinet(cabinets,server);
+			data[i][11] = Helper.findServerInCabinet(getCabinets(),server);
 			data[i][12] = server.getPowerCCT();
 			i++;
 		}
@@ -1170,6 +1174,24 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		checkButtons();
 	}
 	
+	private void refreshPowerTable() {
+		ArrayList<AggregatePower> sortedPowerList = sortPowerCCTUsage();
+		Object[][] data = null;
+		data = new Object[4][3];
+		int i = 0;
+		for (AggregatePower totalCircuit: sortedPowerList) {
+			data[i][0] = totalCircuit.getCircuit();
+			data[i][1] = totalCircuit.getTotalPower();
+			// Magic numbers for voltage (120v) and max capacity (80%)
+			data[i][2] = (totalCircuit.getCircuit().getAmperage()*120)*.8;
+			i++;
+		}
+//		swingServerTrackerModel.setDataVector(totalCircuit, powerTableColumnNames );
+//		new DefaultTableModel(data,powerTableColumnNames);
+		swingPowerUsageModel.setDataVector(data,powerTableColumnNames);
+		powerTable.repaint();
+	
+	}
 	private int countServers(List<Cabinet> cabinets) {
 		int serverCount = 0;
 		for (Cabinet cabinet : cabinets) {
@@ -1178,5 +1200,54 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		return serverCount;
 	}
 	
+	/**
+	 * Return list of servers, sorted in reverse order by power utilization
+	 * 
+	 * Outputs results to ServerReport.txt
+	 */
+	public static ArrayList sortPowerCCTUsage() {
+		ArrayList<Server> servers = (ArrayList<Server>) getServers();
+		ArrayList<AggregatePower> powerList;
+		powerList = new ArrayList<AggregatePower>();
 
+		for (PowerCCT powerCCT: getPowerCCTs()) {
+			AggregatePower newCCT = new AggregatePower(powerCCT);
+			powerList.add(newCCT);
+		}
+			
+		for (Server server: servers) {
+			if (server.getProjectedPower() > 0 && server.getPowerCCT() != null) {
+				for (AggregatePower circuitTotals: powerList) {
+					if (circuitTotals.getCircuit().getId().equals(server.getPowerCCT().getId())) {
+						circuitTotals.addPower(server.getProjectedPower());
+					}
+				}
+			}
+			
+		}
+		System.out.println("Start unsorted: ");
+		for (AggregatePower circuitTotals: powerList) {
+			System.out.println("Circuit: " + circuitTotals.getCircuit() + " Power usage: " + circuitTotals.getTotalPower());
+		}
+
+		Comparator<AggregatePower> powerComparator = new Comparator<AggregatePower>() {
+			@Override
+			public int compare(AggregatePower o1,AggregatePower o2) {
+				int retval = Double.compare(o1.getTotalPower(), o2.getTotalPower());
+				retval*=-1;
+				if (retval == 0) {
+					retval = o1.getCircuit().getName().compareTo(o2.getCircuit().getName());
+				}
+				return retval;
+			}
+		};
+		Collections.sort(powerList, powerComparator);
+		System.out.println("Start sorted: ");
+		for (AggregatePower circuitTotals: powerList) {
+			System.out.println("Circuit: " + circuitTotals.getCircuit() + " Power usage: " + circuitTotals.getTotalPower());
+		}
+
+		return powerList;
+	}
+	
 }

@@ -8,8 +8,8 @@
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://sql3.freemysqlhosting.net/sql346706" />
-		<property name="username" value="sql346706" />
-		<property name="password" value="pQ8*dG7!" />
+		<property name="username" value="sql347630" />
+		<property name="password" value="wB1*vN3*" />
 	</bean>
 
 	

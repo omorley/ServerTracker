@@ -27,6 +27,7 @@ public class PowerCCT {
 	private String ups;
 	// Rating of cct
 	private int amperage;
+	private int defaultAmperage = 15;
 	// String id because I'm told to have it
 	@Id
 	private String id;
@@ -49,6 +50,7 @@ public class PowerCCT {
 	public PowerCCT() {
 		super();
 		setId(UUID.randomUUID().toString());
+		setAmperage(defaultAmperage);
 	}
 	/**
 	 * @param name

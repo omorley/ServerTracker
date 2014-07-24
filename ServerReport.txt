@@ -1683,3 +1683,15 @@ Server Name: Figeac, Projected Power: 100.0
 Server Name: Graach, Projected Power: 100.0
 
 
+Writing report on 2014/07/24 00:46:01Server Name: An, Projected Power: 480.0
+Server Name: Agrafe, Projected Power: 478.0
+Server Name: Alsace, Projected Power: 349.0
+Server Name: Anjou, Projected Power: 152.0
+
+
+Writing report on 2014/07/24 00:46:34Server Name: An, Projected Power: 448.0
+Server Name: Agrafe, Projected Power: 293.0
+Server Name: Alsace, Projected Power: 244.0
+Server Name: Anjou, Projected Power: 197.0
+
+
