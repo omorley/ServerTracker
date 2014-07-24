@@ -313,6 +313,7 @@ public class Helper {
 			System.out.println("Checking cabinet..." + cabinet);
 			for (PowerCCT cabinetPowerCCT: cabinet.getPowerCCTArray()) {
 				if (cabinetPowerCCT.getId() == powerCCT.getId()) {
+					System.out.println("Found in " + cabinet);
 					return cabinet;
 				}
 			}

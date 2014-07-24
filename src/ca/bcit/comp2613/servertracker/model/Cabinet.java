@@ -3,6 +3,7 @@
  */
 package ca.bcit.comp2613.servertracker.model;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -120,8 +121,12 @@ public class Cabinet {
 	 * @param Server the Server to remove
 	 */
 	public void removeServer(Server server) {
-		if (servers.contains(server)) {
-			servers.remove(server);
+		Iterator<Server> iter = servers.iterator();
+		while (iter.hasNext()) {
+			Server currentServer = iter.next();
+			if (currentServer.getId() == server.getId()) {
+				iter.remove();
+			}
 		}
 	}
 	
@@ -163,8 +168,12 @@ public class Cabinet {
 	 * @param PowerCCT the circuit to remove
 	 */
 	public void removePowerCCT(PowerCCT circuit) {
-		if (powerCircuits.contains(circuit)) {
-			powerCircuits.remove(circuit);
+		Iterator<PowerCCT> iter = powerCircuits.iterator();
+		while (iter.hasNext()) {
+			PowerCCT powerCircuit = iter.next();
+			if (powerCircuit.getId() == circuit.getId()) {
+				iter.remove();
+			}
 		}
 	}
 	

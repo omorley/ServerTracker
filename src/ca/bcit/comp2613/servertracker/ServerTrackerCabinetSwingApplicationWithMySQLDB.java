@@ -30,6 +30,7 @@ import javax.swing.table.TableModel;
 import javax.swing.text.Document;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import ca.bcit.comp2613.a00251471.util.Helper;
@@ -433,9 +434,14 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		frame.getContentPane().add(powerCCTModifyList);
 		
 		btnDestroyPowerCCT = new JButton("Destroy");
-		btnDestroyPowerCCT.setEnabled(false);
+		btnDestroyPowerCCT.setEnabled(true);
 		btnDestroyPowerCCT.setBounds(898, 486, 103, 23);
 		frame.getContentPane().add(btnDestroyPowerCCT);
+		btnDestroyPowerCCT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				destroyPowerCCT((PowerCCT) powerCCTModifyList.getSelectedItem());
+			}
+		});
 		
 		cabinetAddNewTextField = new JTextField();
 		cabinetAddNewTextField.setColumns(10);
@@ -560,7 +566,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			updateCabinetList();
 			updatePowerCCTModifyList();
 		} else {
-			userFeedback = "Error, cabinet with this name already exists.";
+			userFeedback = "Err or, cabinet with this name already exists.";
 		}
 	}
 	
@@ -611,9 +617,31 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	}
 
 	public void destroyPowerCCT(PowerCCT powerCCT) {
-		System.out.println("Please flesh this out...");
+		refreshLocalLists();
+		for (Cabinet cabinet: cabinets) {
+			for (PowerCCT powerCCTArray:cabinet.getPowerCCTArray()) {
+				if (powerCCTArray.getId() == powerCCT.getId()) {
+					cabinet.removePowerCCT(powerCCT);
+					cabinetRepository.save(cabinet);
+					for (PowerCCT powerCCTNew:cabinet.getPowerCCTArray()) {
+						System.out.println(" Cabinet cct..." + powerCCTNew.getId());
+					}
+				}
+			}
+		}
+		for (Server server: servers) { 
+			if (server.getPowerCCT().getId() == powerCCT.getId()) {
+				server.setPowerCCT(null);
+				serverRepository.save(server);
+			}
+		}
+		debugPrintServers();
+		powerCCTs.remove(powerCCT);
+		powerCCTRepository.delete(powerCCT);
+		refreshLocalLists();
 		updateCabinetList();
 		updatePowerCCTModifyList();
+		refreshTable();
 	}
 	
 	public void updatePowerCCTList() {
@@ -629,7 +657,6 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 					System.out.println("updatePowerCCTList deadline: " + Helper.findPowerCCTInCabinet(cabinets,powerCCT));
 					System.out.println("PowerCCT: " + powerCCT);
 					if (Helper.findPowerCCTInCabinet(cabinets,powerCCT) == null) {
-						System.out.println("Empty.. adding: " + powerCCT);
 						powerCCTComboBox.addItem(powerCCT);
 					}
 				}
@@ -790,20 +817,25 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		server.setServiceTag(serverServiceTag);
 		server.setWarrantyExpiration(serverWarranty);
 		serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
+		//Ghetto fix for the win
+		for (Cabinet fixLink: cabinets) {
+			if (fixLink.getId() == ((Cabinet) cabinetComboBox.getSelectedItem()).getId()) {
+				serverCabinet = fixLink;
+				break;
+			}
+		}
 		if (! serverCabinet.getPowerCCTArray().contains(powerCircuit)) {
 			serverCabinet.addPowerCCT(powerCircuit);
+			powerCCTRepository.save(powerCircuit);
+			cabinetRepository.save(serverCabinet);
+//			cabinets.add(serverCabinet);
+			System.out.println("Listing starting...");
+			for (PowerCCT debug123:serverCabinet.getPowerCCTArray()) {
+				System.out.println(debug123.getId());
+			}
+			System.out.println("Listing complete...");
 		}
-		//Depreciated by new method for data entry
-//		if (cabinetComboBox.getSelectedItem() != null && powerCCTComboBox.getSelectedIndex() != 0) {
-//			serverCabinet = (Cabinet) cabinetComboBox.getSelectedItem();
-//		} else {
-//			serverCabinet = new Cabinet();
-//			serverCabinet.setId(getNextCabinetId());
-//			serverCabinet.addPowerCCT(powerCircuit);
-//			serverCabinet.setName(cabinetTextField.getText());
-//		}
 		save(serverCabinet, server);
-		doCleanCabinets();
 		refreshLocalLists();
 		table.clearSelection();
 		checkButtons();
@@ -818,6 +850,11 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	 */
 	public static void save(Cabinet newCabinet, Server server) {
 		boolean foundUpdate = false;
+		System.out.println("Listing starting 2...");
+		for (PowerCCT debug123:newCabinet.getPowerCCTArray()) {
+			System.out.println(debug123.getId());
+		}
+		System.out.println("Listing complete 2...");
 //		if (! cabinets.contains(newCabinet)) {
 //			debugPrintServers();
 //			System.out.println("And new cabinet is... " + newCabinet);
@@ -832,6 +869,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 				Server serverLoop = iter.next();
 				if (serverLoop.getId().equals(server.getId())) {
 					if (cabinet.getId().equals(newCabinet.getId())) {
+						System.out.println("Updating server, no cabinet change.");
 						serverLoop.setName(server.getName());
 						serverLoop.setIp(server.getIp());
 						serverLoop.setPowerCCT(server.getPowerCCT());
@@ -847,16 +885,26 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 						foundUpdate = true;
 						break outerloop;
 					} else {
-						//updating local data
 						iter.remove();
-						cabinet.removeServer(server);
-						newCabinet.addServer(server);
-						//updating database
-						cabinets.add(newCabinet);
 						serverRepository.save(server);
+						cabinet.removeServer(server);
 						cabinetRepository.save(cabinet);
+						newCabinet.addServer(server);
+
+						System.out.println("Number of cabinets: " + cabinets.size());
+						
+						
+						for (Cabinet cabinetDebug: cabinets) {
+							System.out.println("Cabinet: " + cabinetDebug + " Cabinet id: " + cabinetDebug.getId());
+
+							for (PowerCCT powerCCTDebug: cabinetDebug.getPowerCCTArray()) {
+								System.out.println("Power circuit: " + powerCCTDebug + " ID: " + powerCCTDebug.getId());
+							}
+						}
+
 						cabinetRepository.save(newCabinet);
 						foundUpdate = true;
+						System.out.println("Update complete");
 						break outerloop;
 					}
 				}
@@ -865,7 +913,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		if (!foundUpdate) { 
 			// do an insert
 			newCabinet.addServer(server);
-			cabinets.add(newCabinet);
+//			cabinets.add(newCabinet);
 			cabinetRepository.save(newCabinet);
 		}
 		debugPrintServers();
@@ -873,7 +921,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	
 	public static void debugPrintServers() {
 		for (Cabinet cabinet: getCabinets()) {
-			System.out.println("Cabinet: " + cabinet);
+			System.out.println("Cabinet: " + cabinet + " Total servers: " + cabinet.getServersArray().size());
 			for (Server server: cabinet.getServersArray()) {
 				System.out.println("Server: " + server.getName() + " ID: " + server.getId());
 			}
@@ -882,6 +930,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 				
 			}
 		}
+		System.out.println("cabinet listing complete.");
 		for (Server server: getServers()) {
 			System.out.println("Server: " + server.getName() + " ID: " + server.getId());
 		}
