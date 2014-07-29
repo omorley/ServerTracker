@@ -1,32 +1,71 @@
+<!DOCTYPE html>
 <html>
-<body>
-<H1>COMP2613 Student Application</H1>
-<div>
-by Owen Morley<br>
-last modified on July 28/2014/2014
-</div>
-<br/>
-I am a student for course (comp2613) at BCIT, my processor is Henry Chan<br/>
-The project I have created is a Server tracker, with relationships to power and cabinets in a Data Centre environment.<br/>
-You can add/remove servers, cabinets and power circuits as needed</br>
-This application is powered by Swing backed by a H2 DB.<br/>
-If you wish to see the data persisted to H2, open up the local console after the application has started.<br/>
-URL: <a href="http://localhost:8082">http://localhost:8082</a> (H2 will start a server for you)<br/>
-and login with the following settings:<br/>
-<pre>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="COMP2613 Student Application : COMP2613 Student Application" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>COMP2613 Student Application</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/omorley/ServerTracker">View on GitHub</a>
+
+          <h1 id="project_title">COMP2613 Student Application</h1>
+          <h2 id="project_tagline">COMP2613 Student Application</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/omorley/ServerTracker/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/omorley/ServerTracker/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>by Owen Morley
+last modified on July 28/2014/2014</p>
+
+<p>I am a student for course (comp2613) at BCIT, my processor is Henry Chan</p>
+
+<p>The project I have created is a Server tracker, with relationships to power and cabinets in a Data Centre environment.</p>
+
+<p>You can add/remove servers, cabinets and power circuits as needed</p>
+
+<p>This application is powered by Swing backed by a H2 DB.</p>
+
+<p>If you wish to see the data persisted to H2, open up the local console after the application has started.
+URL: http://localhost:8082 (H2 will start a server for you)
+and login with the following settings:
 Generic H2 (Embedded)
 org.h2.Driver
 jdbc:h2:mem:testdb
-blank username and password
-</pre>
-<hr/>
- Click <a href="ServerTracker.zip">here</a> to download my application.  After you unzip this application into a suitable folder, "cd" into that directory and run:<br/>
-<pre>
-java -jar ServerTracker-0.0.1-SNAPSHOT.jar
-</pre><br/>
-<hr/>
-The code for this project can be found via github <a href="https://github.com/omorley/ServerTracker">https://github.com/omorley/ServerTracker</a>
-<hr/>
-</body>
+blank username and password</p>
 
+<p>Click <a href="ServerTracker.zip">ServerTracker.zip</a> to download my application. After you unzip this application into a suitable folder, "cd" into that directory and run:
+java -jar ServerTracker-0.0.1-SNAPSHOT.jar</p>
+
+<p>The code for this project can be found via github <a href="https://github.com/omorley/ServerTracker">https://github.com/omorley/ServerTracker</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">COMP2613 Student Application maintained by <a href="https://github.com/omorley">omorley</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
 </html>
