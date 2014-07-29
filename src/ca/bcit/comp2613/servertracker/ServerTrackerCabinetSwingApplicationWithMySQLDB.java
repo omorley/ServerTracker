@@ -206,6 +206,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 				});
 		refreshTable();
 		refreshPowerTable();
+		doCleanPower();
 		doNew();
 	}
 	
@@ -629,16 +630,20 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	public void destroyPowerCCT(PowerCCT powerCCT) {
 		refreshLocalLists();
 		for (Cabinet cabinet: getCabinets()) {
-			for (PowerCCT powerCCTArray:cabinet.getPowerCCTArray()) {
-				if (powerCCTArray.getId() == powerCCT.getId()) {
-					cabinet.removePowerCCT(powerCCT);
-					cabinetRepository.save(cabinet);
-					for (PowerCCT powerCCTNew:cabinet.getPowerCCTArray()) {
-						System.out.println(" Cabinet cct..." + powerCCTNew.getId());
-					}
+			boolean hasModified = false;
+			Iterator<PowerCCT> iter = cabinet.getPowerCCTArray().iterator();
+			while (iter.hasNext()) {
+				PowerCCT powerCCTLoop = iter.next();
+				if (powerCCT.getId() == powerCCTLoop.getId()) {
+					System.out.println("MISSING CIRCUIT! " + cabinet + " does not include " + powerCCTLoop);
+					iter.remove();
+					hasModified = true;
 				}
 			}
-		}
+			if (hasModified) {
+				cabinetRepository.save(cabinet);
+			}
+		}			
 		for (Server server: servers) { 
 			if (server.getPowerCCT().getId() == powerCCT.getId()) {
 				server.setPowerCCT(null);
@@ -922,6 +927,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 			}
 		}
 		debugPrintServers();
+		doCleanPower();
 	}
 	
 	public static void debugPrintServers() {
@@ -962,8 +968,6 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		idTextField.setText(id);
 		serverNameTextField.setText("");
 		serverIPTextField.setText("");
-//		cabinetTextField.setText("");
-//		powerCCTTextField.setText("");
 	}
 	
 	/**
@@ -979,6 +983,32 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		}
 	}
 	
+	/**
+	 * Clear out unused power from cabinets
+	 */
+	public static void doCleanPower() {
+		for (Cabinet currentCabinet: getCabinets()) {
+			boolean hasModified = false;
+			List<PowerCCT> usedPowerCircuits = new ArrayList<PowerCCT>();
+			for (Server server: currentCabinet.getServersArray()) {
+				if (! usedPowerCircuits.contains(server.getPowerCCT())) {
+					usedPowerCircuits.add(server.getPowerCCT());
+				}
+			}
+			Iterator<PowerCCT> iter = currentCabinet.getPowerCCTArray().iterator();
+			while (iter.hasNext()) {
+				PowerCCT powerCCTLoop = iter.next();
+				if (! usedPowerCircuits.contains(powerCCTLoop)) {
+					System.out.println("MISSING CIRCUIT! " + currentCabinet + " does not include " + powerCCTLoop);
+					iter.remove();
+					hasModified = true;
+				}
+			}
+			if (hasModified) {
+				cabinetRepository.save(currentCabinet);
+			}
+		}
+	}
 	/**
 	 * 
 	 * @return next available ID based on highest in use
