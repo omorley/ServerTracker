@@ -19,16 +19,62 @@
       </resource>
     </resources>
 	<plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
+	    <plugin>
+	      <artifactId>maven-compiler-plugin</artifactId>
+	      <version>3.1</version>
+	      <configuration>
+	        <source>1.7</source>
+	        <target>1.7</target>
+	      </configuration>
+	    </plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jar-plugin</artifactId>
+			<configuration>
+				<archive>
+					<manifest>
+						<addClasspath>true</addClasspath>
+						<classpathPrefix>lib/</classpathPrefix>
+						<mainClass>ca.bcit.comp2613.servertracker.ServerTrackerCabinetSwingApplicationWithMySQLDB</mainClass>
+					</manifest>
+				</archive>
+			</configuration>
+		</plugin>
+		<plugin>
+			<artifactId>maven-dependency-plugin</artifactId>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<outputDirectory>${project.build.directory}/lib</outputDirectory>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-antrun-plugin</artifactId>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<configuration>
+						<tasks>
+							<!-- <echo message="${project.basedir}" /> <echo message="${project.name}" 
+								/> <echo message="${project.build.directory}" /> -->
+							<zip destfile="${project.basedir}/${project.name}.zip"
+								basedir="${project.build.directory}" />
+						</tasks>
+					</configuration>
+					<goals>
+						<goal>run</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
     </plugins>
-   
   </build>
 	<dependencies>
 		<dependency>
