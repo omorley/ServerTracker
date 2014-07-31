@@ -952,9 +952,11 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		String id = idTextField.getText();
 		Server server = (Server) table.getModel().getValueAt(table.getSelectedRow(), 1);
 		Cabinet cabinet = (Cabinet) table.getModel().getValueAt(table.getSelectedRow(), 11);
-		cabinet.removeServer(server);
-		Helper.delete(getCabinets(), server);
-		cabinetRepository.save(cabinet);
+		if (cabinet != null) {
+			cabinet.removeServer(server);
+			Helper.delete(getCabinets(), server);
+			cabinetRepository.save(cabinet);
+		}
 		serverRepository.delete(server.getId());
 		table.clearSelection();
 		refreshTable();
