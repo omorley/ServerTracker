@@ -951,9 +951,9 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 	public void doDelete() {
 		String id = idTextField.getText();
 		Server server = (Server) table.getModel().getValueAt(table.getSelectedRow(), 1);
-		Cabinet cabinet = (Cabinet) table.getModel().getValueAt(table.getSelectedRow(), 3);
+		Cabinet cabinet = (Cabinet) table.getModel().getValueAt(table.getSelectedRow(), 11);
 		cabinet.removeServer(server);
-//		Helper.delete(getCabinets(), server);
+		Helper.delete(getCabinets(), server);
 		cabinetRepository.save(cabinet);
 		serverRepository.delete(server.getId());
 		table.clearSelection();
