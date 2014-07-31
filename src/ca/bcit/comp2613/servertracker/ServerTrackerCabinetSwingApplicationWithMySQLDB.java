@@ -327,7 +327,7 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		frame.getContentPane().add(btnDelete);
 		btnDelete.setEnabled(false);
 		
-		btnNewButton = new JButton("New");
+		btnNewButton = new JButton("Clear");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				doNew();
@@ -968,6 +968,18 @@ public class ServerTrackerCabinetSwingApplicationWithMySQLDB {
 		idTextField.setText(id);
 		serverNameTextField.setText("");
 		serverIPTextField.setText("");
+		serverPurposeTextField.setText("");
+		serverOwnerTextField.setText("");
+		serverProjectedPowerTextField.setText("");
+		serverCPUSocketsTextField.setText("");
+		serverCPUCoresTextField.setText("");
+		serverMemoryTextField.setText("");
+		serverServiceTagTextField.setText("");
+		serverWarrantyDateTextField.setText("");
+		cabinetAddNewTextField.setText("");
+		powerAddNewTextField.setText("");
+		powerCCTComboBox.setSelectedIndex(0);
+		cabinetComboBox.setSelectedIndex(0);
 	}
 	
 	/**
